@@ -1,9 +1,12 @@
 // Método por capas de la guía oficial "You Can Do the Rubik's Cube — Solution Guide"
 // (Rubik's, v1-EU-M-2020). Copia en docs/Rubiks-3x3-Solve-Guide.pdf.
+import type { Focus } from './cube/focus'
+
 export interface Demo {
   title: string
   alg: string
   note?: string
+  focus?: Focus
 }
 export interface Lesson {
   id: string
@@ -15,12 +18,14 @@ export interface Lesson {
   tip?: string
   /** true: el cubo se muestra con amarillo arriba (blanco abajo); false: blanco arriba */
   yellowUp: boolean
+  /** piezas en color en los ejemplos; el resto, gris (como en la guía oficial) */
+  focus: Focus
   demos: Demo[]
 }
 
 export const LESSONS: Lesson[] = [
   {
-    id: 'notacion', stage: 'Antes de empezar', title: 'Conoce tu cubo y la notación', yellowUp: false,
+    id: 'notacion', stage: 'Antes de empezar', title: 'Conoce tu cubo y la notación', yellowUp: false, focus: 'all',
     holding: 'Deja el cubo sobre la mesa y no cambies la cara frontal durante un algoritmo.',
     intro: 'Resolverás el cubo capa a capa. Cada letra es una cara y un giro horario mirándola de frente.',
     points: [
@@ -37,7 +42,7 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'margarita', stage: 'Primera capa', title: 'Paso 1: la margarita', yellowUp: true,
+    id: 'margarita', stage: 'Primera capa', title: 'Paso 1: la margarita', yellowUp: true, focus: 'white-edges',
     holding: 'Con el centro AMARILLO en la cara de arriba (U).',
     intro: 'Sube las 4 aristas blancas alrededor del centro amarillo. Da igual que el blanco no toque el amarillo en este paso.',
     points: [
@@ -53,7 +58,7 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'cruz-blanca', stage: 'Primera capa', title: 'Paso 2: cruz blanca con aristas emparejadas', yellowUp: true,
+    id: 'cruz-blanca', stage: 'Primera capa', title: 'Paso 2: cruz blanca con aristas emparejadas', yellowUp: true, focus: 'white-edges',
     holding: 'Con la margarita arriba (U), mirando a la cara frontal.',
     intro: 'Baja cada arista blanca para formar la cruz blanca, con el otro color de cada arista igual al centro de su lado.',
     points: [
@@ -65,7 +70,7 @@ export const LESSONS: Lesson[] = [
     demos: [{ title: 'Bajar la arista', alg: 'F2' }],
   },
   {
-    id: 'esquinas-blancas', stage: 'Primera capa', title: 'Paso 3: las esquinas blancas', yellowUp: false,
+    id: 'esquinas-blancas', stage: 'Primera capa', title: 'Paso 3: las esquinas blancas', yellowUp: false, focus: 'white-layer',
     holding: 'Con la cruz blanca en la cara de arriba (U).',
     intro: 'La esquina bien colocada queda entre los centros que tienen sus mismos colores (la roja/azul/blanca, entre el rojo, el azul y el blanco).',
     points: [
@@ -83,7 +88,7 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'capa-medio', stage: 'Capa del medio', title: 'Resolver la capa del medio', yellowUp: true,
+    id: 'capa-medio', stage: 'Capa del medio', title: 'Resolver la capa del medio', yellowUp: true, focus: 'two-layers',
     holding: 'Da la vuelta al cubo: la cara blanca completada abajo (D).',
     intro: 'Coloca las 4 aristas de la capa central, las que no llevan amarillo.',
     points: [
@@ -100,7 +105,7 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'cruz-amarilla', stage: 'Última capa', title: 'Paso 1: la cruz amarilla', yellowUp: true,
+    id: 'cruz-amarilla', stage: 'Última capa', title: 'Paso 1: la cruz amarilla', yellowUp: true, focus: 'top-face',
     holding: 'Fíjate solo en las aristas amarillas de la cara de arriba (no en las esquinas).',
     intro: 'Mira si tienes un punto, una «L» o una línea y aplica el algoritmo. Se repite hasta formar la cruz.',
     points: [
@@ -111,7 +116,7 @@ export const LESSONS: Lesson[] = [
     demos: [{ title: 'Hacer la cruz amarilla', alg: "F U R U' R' F'" }],
   },
   {
-    id: 'orientar-esquinas', stage: 'Última capa', title: 'Paso 2: orientar las esquinas', yellowUp: true,
+    id: 'orientar-esquinas', stage: 'Última capa', title: 'Paso 2: orientar las esquinas', yellowUp: true, focus: 'top-face',
     holding: 'Sujeta el cubo según cuántas esquinas amarillas haya arriba (la guía usa trucos de memoria).',
     intro: 'Consigue que todo el amarillo quede en la cara de arriba.',
     points: [
@@ -124,7 +129,7 @@ export const LESSONS: Lesson[] = [
     demos: [{ title: 'Orientar esquinas', alg: "R U R' U R U2 R'" }],
   },
   {
-    id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true,
+    id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true, focus: 'top-corners',
     holding: 'Con el amarillo arriba (U).',
     intro: 'Gira U hasta que dos esquinas estén bien colocadas (sus colores coinciden con los centros).',
     points: [
@@ -135,7 +140,7 @@ export const LESSONS: Lesson[] = [
     demos: [{ title: 'Colocar las esquinas', alg: "R' F R' B2 R F' R' B2 R2 U'" }],
   },
   {
-    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true,
+    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'top-layer',
     holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual.',
     intro: 'Último paso: las aristas de arriba van a su sitio y el cubo queda resuelto.',
     points: [

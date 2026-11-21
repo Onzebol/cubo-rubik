@@ -1,6 +1,7 @@
 import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { faceOf, type Face, type Vec } from '../cube/cube'
 import { animatedMatrix, cssMatrix, type Cubie } from '../cube/cubies'
+import { isColored, type Focus } from '../cube/focus'
 
 export const CUBIE_SIZE = 50
 const HALF = CUBIE_SIZE / 2
@@ -20,9 +21,11 @@ interface Props {
   cubies: Cubie[]
   turn?: { face: Face; turns: number } | null
   className?: string
+  /** qué piezas van en color; el resto en gris (por defecto, todas) */
+  focus?: Focus
 }
 
-export function Cube3D({ cubies, turn, className }: Props) {
+export function Cube3D({ cubies, turn, className, focus = 'all' }: Props) {
   const [view, setView] = useState({ rx: -28, ry: -38 })
   const drag = useRef<{ x: number; y: number } | null>(null)
 
@@ -64,7 +67,7 @@ export function Cube3D({ cubies, turn, className }: Props) {
               return (
                 <div
                   key={face}
-                  className={`sticker c-${f.c}`}
+                  className={`sticker c-${isColored(focus, c, f) ? f.c : 'gray'}`}
                   style={{ transform: `${FACE_TRANSFORM[face]} translateZ(0.5px)` }}
                 >
                   {c.faces.length === 1 && <span className="label">{face}</span>}

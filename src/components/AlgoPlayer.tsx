@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { invert, parseAlg } from '../cube/cube'
 import { createCubies, turnCubies } from '../cube/cubies'
+import type { Focus } from '../cube/focus'
 import { useAnimator } from '../useAnimator'
 import { Cube3D } from './Cube3D'
 
@@ -9,6 +10,7 @@ interface Props {
   yellowUp: boolean
   title?: string
   note?: string
+  focus?: Focus
   instant?: boolean
 }
 
@@ -16,7 +18,7 @@ const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
-export function AlgoPlayer({ alg, yellowUp, title, note, instant = false }: Props) {
+export function AlgoPlayer({ alg, yellowUp, title, note, focus, instant = false }: Props) {
   const moves = useMemo(() => parseAlg(alg), [alg])
   const setup = () => {
     let cs = createCubies(yellowUp)
@@ -80,7 +82,7 @@ export function AlgoPlayer({ alg, yellowUp, title, note, instant = false }: Prop
   return (
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
-      <Cube3D cubies={anim.cubies} turn={anim.turn} />
+      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
           <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === index - 1 ? 'step' : undefined}>

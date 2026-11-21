@@ -22,6 +22,15 @@ describe('Cube3D', () => {
     const distintos = a.filter((v, i) => v !== b[i]).length
     expect(distintos).toBe(9) // los 9 cubies de la capa U (8 + el centro)
   })
+  it('con foco, las pegatinas no relevantes se pintan en gris', () => {
+    const { container } = render(<Cube3D cubies={createCubies(false)} focus="white-edges" />)
+    expect(container.querySelectorAll('.sticker.c-gray')).toHaveLength(54 - 14)
+    expect(container.querySelectorAll('.sticker.c-W').length).toBeGreaterThan(0)
+  })
+  it('sin foco no hay gris', () => {
+    const { container } = render(<Cube3D cubies={createCubies(false)} />)
+    expect(container.querySelectorAll('.sticker.c-gray')).toHaveLength(0)
+  })
   it('refleja el estado tras un giro', () => {
     const girado = turnCubies(createCubies(false), 'R', 1)
     const { container } = render(<Cube3D cubies={girado} />)
