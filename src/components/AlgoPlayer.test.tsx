@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AlgoPlayer } from './AlgoPlayer'
 
@@ -92,6 +92,62 @@ describe('AlgoPlayer', () => {
       expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
       await screen.findByText('0 / 2', {}, { timeout: 3000 })
       expect(screen.getAllByRole('listitem')[0]).not.toHaveAttribute('aria-current')
+    })
+  })
+  it('el selector de velocidad solo tiene 1× y 2×, y empieza en 1×', () => {
+    render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+    const selector = screen.getByRole('combobox')
+    expect([...selector.querySelectorAll('option')].map((o) => o.textContent)).toEqual(['1×', '2×'])
+    expect(selector).toHaveValue('1')
+  })
+  it('el botón de cuenta atrás está justo al lado del play normal', () => {
+    render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+    const play = screen.getByRole('button', { name: 'Reproducir' })
+    const cuentaAtras = screen.getByRole('button', { name: 'Reproducir con cuenta atrás' })
+    expect(play.nextElementSibling).toBe(cuentaAtras)
+  })
+  describe('botón de play con cuenta atrás', () => {
+    beforeEach(() => { vi.useFakeTimers() })
+    afterEach(() => { vi.useRealTimers() })
+    const clic = (nombre: string) => act(() => { fireEvent.click(screen.getByRole('button', { name: nombre })) })
+    const avanzar = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms))
+
+    it('muestra 3, 2, 1 y solo entonces empieza', async () => {
+      render(<AlgoPlayer alg="R U R' U'" yellowUp={false} instant />)
+      await clic('Reproducir con cuenta atrás')
+      expect(screen.getByRole('timer')).toHaveTextContent('3')
+      expect(screen.getByText('0 / 4')).toBeInTheDocument()
+      await avanzar(1000)
+      expect(screen.getByRole('timer')).toHaveTextContent('2')
+      await avanzar(1000)
+      expect(screen.getByRole('timer')).toHaveTextContent('1')
+      expect(screen.getByText('0 / 4')).toBeInTheDocument() // aún sin empezar
+      await avanzar(1000)
+      expect(screen.queryByRole('timer')).not.toBeInTheDocument()
+      expect(screen.getByText('4 / 4')).toBeInTheDocument()
+    })
+    it('se puede cancelar: no llega a empezar', async () => {
+      render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+      await clic('Reproducir con cuenta atrás')
+      await avanzar(1000)
+      await clic('Cancelar cuenta atrás')
+      expect(screen.queryByRole('timer')).not.toBeInTheDocument()
+      await avanzar(5000)
+      expect(screen.getByText('0 / 2')).toBeInTheDocument()
+    })
+    it('durante la cuenta atrás no se puede usar Siguiente ni Reproducir', async () => {
+      render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+      await clic('Reproducir con cuenta atrás')
+      expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Reproducir' })).toBeDisabled()
+    })
+    it('Reiniciar también la cancela', async () => {
+      render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+      await clic('Reproducir con cuenta atrás')
+      await clic('Reiniciar')
+      expect(screen.queryByRole('timer')).not.toBeInTheDocument()
+      await avanzar(5000)
+      expect(screen.getByText('0 / 2')).toBeInTheDocument()
     })
   })
   it('Reproducir recorre todo el algoritmo', async () => {
