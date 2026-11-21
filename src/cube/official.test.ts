@@ -25,6 +25,19 @@ describe('lecciones de la guía oficial', () => {
       expect(isSolved(c)).toBe(true)
     }
   })
+  it('todos los ejemplos tienen instrucciones propias', () => {
+    for (const l of LESSONS) for (const d of l.demos) {
+      expect(d.instructions.trim().length, `${l.id}: ${d.title}`).toBeGreaterThan(20)
+    }
+  })
+  it('las instrucciones de un ejemplo con movimientos nombran esos movimientos', () => {
+    for (const l of LESSONS) for (const d of l.demos) {
+      const moves = d.alg.split(' ').filter(Boolean)
+      if (moves.length < 3) continue
+      // el texto nombra el algoritmo (o su base, si el ejemplo lo repite o lo combina)
+      expect(d.instructions, `${l.id}: ${d.title}`).toContain(moves.slice(0, 3).join(' '))
+    }
+  })
   it('los ids son únicos', () => {
     const ids = LESSONS.map((l) => l.id)
     expect(new Set(ids).size).toBe(ids.length)

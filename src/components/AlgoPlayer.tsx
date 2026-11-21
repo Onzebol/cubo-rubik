@@ -11,6 +11,8 @@ interface Props {
   setup?: string
   yellowUp: boolean
   title?: string
+  /** qué se ve y qué hay que hacer en este caso */
+  instructions?: string
   note?: string
   focus?: Focus
   instant?: boolean
@@ -20,7 +22,7 @@ const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
-export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus, instant = false }: Props) {
+export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions, note, focus, instant = false }: Props) {
   const moves = useMemo(() => parseAlg(alg), [alg])
   const setup = () => {
     let cs = createCubies(yellowUp)
@@ -85,6 +87,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus,
     return (
       <figure className="player">
         {title && <figcaption><strong>{title}</strong></figcaption>}
+        {instructions && <p className="instructions">{instructions}</p>}
         <Cube3D cubies={anim.cubies} focus={focus} />
         {note && <p className="note">{note}</p>}
       </figure>
@@ -94,6 +97,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus,
   return (
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
+        {instructions && <p className="instructions">{instructions}</p>}
       <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (

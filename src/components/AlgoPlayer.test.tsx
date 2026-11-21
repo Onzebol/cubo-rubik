@@ -42,6 +42,14 @@ describe('AlgoPlayer', () => {
     expect(screen.queryByRole('button', { name: 'Siguiente' })).not.toBeInTheDocument()
     expect(screen.queryByRole('list')).not.toBeInTheDocument()
   })
+  it('muestra las instrucciones del ejemplo junto al cubo', () => {
+    render(<AlgoPlayer alg="F2" yellowUp instructions="Gira la cara frontal dos veces." instant />)
+    expect(screen.getByText('Gira la cara frontal dos veces.')).toBeInTheDocument()
+  })
+  it('también en los ejemplos estáticos', () => {
+    render(<AlgoPlayer alg="" setup="F2" yellowUp instructions="Así debe quedar." instant />)
+    expect(screen.getByText('Así debe quedar.')).toBeInTheDocument()
+  })
   it('Reproducir recorre todo el algoritmo', async () => {
     const u = userEvent.setup()
     render(<AlgoPlayer alg="R U R' U'" yellowUp={false} instant />)
