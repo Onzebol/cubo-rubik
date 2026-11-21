@@ -37,7 +37,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     [alg, setupAlg, yellowUp, focus, highlight],
   )
   const [index, setIndex] = useState(0)
-  /** movimiento que se está animando ahora mismo: se marca desde que empieza, no cuando acaba */
+  /** movimiento que se está animando ahora mismo: en amarillo desde que empieza y hasta que acaba */
   const [active, setActive] = useState<number | null>(null)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
@@ -113,7 +113,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
       <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
-          <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === (active ?? index - 1) ? 'step' : undefined}>
+          <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === active ? 'step' : undefined}>
             {m.name}
           </li>
         ))}

@@ -8,12 +8,13 @@ describe('AlgoPlayer', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
     expect(screen.getByText('0 / 4')).toBeInTheDocument()
   })
-  it('Siguiente avanza un movimiento y lo marca', async () => {
+  it('Siguiente avanza un movimiento y lo deja como hecho (sin marcarlo)', async () => {
     const u = userEvent.setup()
     render(<AlgoPlayer alg="R U R' U'" yellowUp={false} instant />)
     await u.click(screen.getByRole('button', { name: 'Siguiente' }))
     expect(await screen.findByText('1 / 4')).toBeInTheDocument()
-    expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
+    expect(screen.getAllByRole('listitem')[0]).toHaveClass('hecho')
+    expect(screen.getAllByRole('listitem')[0]).not.toHaveAttribute('aria-current')
   })
   it('Anterior retrocede y Reiniciar vuelve al principio', async () => {
     const u = userEvent.setup()
@@ -62,7 +63,9 @@ describe('AlgoPlayer', () => {
       expect(screen.getByText('0 / 2')).toBeInTheDocument() // el giro aún no ha terminado
       expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
       expect(await screen.findByText('1 / 2', {}, { timeout: 3000 })).toBeInTheDocument()
-      expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
+      // al terminar el giro ya no está en amarillo: queda como hecho
+      expect(screen.getAllByRole('listitem')[0]).not.toHaveAttribute('aria-current')
+      expect(screen.getAllByRole('listitem')[0]).toHaveClass('hecho')
     })
     it('Reproducir: cada ficha se marca al empezar su giro', async () => {
       const u = userEvent.setup()
@@ -74,6 +77,11 @@ describe('AlgoPlayer', () => {
       expect(screen.getByText('1 / 2')).toBeInTheDocument() // el segundo giro aún no ha terminado
       expect(fichas[0]).not.toHaveAttribute('aria-current')
       expect(await screen.findByText('2 / 2', {}, { timeout: 3000 })).toBeInTheDocument()
+      // al acabar, el último movimiento no se queda en amarillo
+      for (const ficha of fichas) {
+        expect(ficha).not.toHaveAttribute('aria-current')
+        expect(ficha).toHaveClass('hecho')
+      }
     })
     it('Anterior: la ficha que se deshace sigue marcada mientras gira y luego se desmarca', async () => {
       const u = userEvent.setup()
