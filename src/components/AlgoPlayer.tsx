@@ -11,7 +11,8 @@ interface Props {
   setup?: string
   yellowUp: boolean
   title?: string
-  note?: string
+  /** qué se ve y qué hay que hacer en este caso */
+  instructions?: string
   focus?: Focus
   instant?: boolean
 }
@@ -20,7 +21,7 @@ const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
-export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus, instant = false }: Props) {
+export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions, focus, instant = false }: Props) {
   const moves = useMemo(() => parseAlg(alg), [alg])
   const setup = () => {
     let cs = createCubies(yellowUp)
@@ -85,8 +86,8 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus,
     return (
       <figure className="player">
         {title && <figcaption><strong>{title}</strong></figcaption>}
+        {instructions && <p className="instructions">{instructions}</p>}
         <Cube3D cubies={anim.cubies} focus={focus} />
-        {note && <p className="note">{note}</p>}
       </figure>
     )
   }
@@ -94,6 +95,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus,
   return (
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
+        {instructions && <p className="instructions">{instructions}</p>}
       <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
@@ -106,7 +108,6 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus,
         <span>{index} / {moves.length}</span>
         {done && <span className="ok"> · ¡Hecho!</span>}
       </p>
-      {note && <p className="note">{note}</p>}
       <div className="controls">
         <button type="button" onClick={reset} aria-label="Reiniciar">⏮</button>
         <button type="button" onClick={back} disabled={index === 0 || playing} aria-label="Anterior">◀</button>

@@ -25,6 +25,32 @@ describe('lecciones de la guía oficial', () => {
       expect(isSolved(c)).toBe(true)
     }
   })
+  it('todos los ejemplos tienen instrucciones propias', () => {
+    for (const l of LESSONS) for (const d of l.demos) {
+      expect(d.instructions.trim().length, `${l.id}: ${d.title}`).toBeGreaterThan(20)
+    }
+  })
+  it('las instrucciones de un ejemplo con movimientos nombran esos movimientos', () => {
+    for (const l of LESSONS) for (const d of l.demos) {
+      const moves = d.alg.split(' ').filter(Boolean)
+      if (moves.length < 3) continue
+      // el texto nombra el algoritmo (o su base, si el ejemplo lo repite o lo combina)
+      expect(d.instructions, `${l.id}: ${d.title}`).toContain(moves.slice(0, 3).join(' '))
+    }
+  })
+  it('el texto general de la lección no repite los algoritmos que ya explican los ejemplos', () => {
+    for (const l of LESSONS) {
+      const algs = l.demos.map((d) => d.alg.split(' ').filter(Boolean)).filter((m) => m.length >= 3)
+      for (const point of l.points) {
+        for (const m of algs) {
+          expect(point, `${l.id}: «${point}»`).not.toContain(m.slice(0, 3).join(' '))
+        }
+      }
+    }
+  })
+  it('las instrucciones no se duplican en una nota aparte', () => {
+    for (const l of LESSONS) for (const d of l.demos) expect(Object.keys(d), `${l.id}: ${d.title}`).not.toContain('note')
+  })
   it('los ids son únicos', () => {
     const ids = LESSONS.map((l) => l.id)
     expect(new Set(ids).size).toBe(ids.length)

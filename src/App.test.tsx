@@ -20,6 +20,12 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /la margarita/i })).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: 'Siguiente' }).length).toBeGreaterThan(0)
   })
+  it('cada ejemplo de la lección muestra sus instrucciones', async () => {
+    window.location.hash = '#/leccion/cruz-amarilla'
+    render(<App instant />)
+    const l = LESSONS.find((x) => x.id === 'cruz-amarilla')!
+    for (const d of l.demos) expect(await screen.findByText(d.instructions)).toBeInTheDocument()
+  })
   it('marca una lección como hecha y guarda el progreso', async () => {
     const u = userEvent.setup()
     render(<App instant />)

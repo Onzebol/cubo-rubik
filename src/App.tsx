@@ -85,7 +85,7 @@ function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: b
       <h2>Míralo en el cubo</h2>
       <p className="hint">Arrastra el cubo para verlo desde otro lado. Parte de la posición previa al algoritmo.</p>
       {lesson.demos.map((d) => (
-        <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} yellowUp={lesson.yellowUp} title={d.title} note={d.note} focus={d.focus ?? lesson.focus} instant={instant} />
+        <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} instructions={d.instructions} yellowUp={lesson.yellowUp} title={d.title} focus={d.focus ?? lesson.focus} instant={instant} />
       ))}
       <label className="check">
         <input type="checkbox" checked={done} onChange={toggle} /> Marcar como hecha

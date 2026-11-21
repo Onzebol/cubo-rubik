@@ -36,11 +36,19 @@ describe('AlgoPlayer', () => {
     expect(screen.getAllByText('0 / 1')).toHaveLength(2)
   })
   it('sin movimientos es un ejemplo estático: solo el cubo y la nota', () => {
-    render(<AlgoPlayer alg="" setup="F2" yellowUp instant title="Resultado" note="Así debe quedar" />)
+    render(<AlgoPlayer alg="" setup="F2" yellowUp instant title="Resultado" instructions="Así debe quedar" />)
     expect(screen.getByText('Resultado')).toBeInTheDocument()
     expect(screen.getByText('Así debe quedar')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Siguiente' })).not.toBeInTheDocument()
     expect(screen.queryByRole('list')).not.toBeInTheDocument()
+  })
+  it('muestra las instrucciones del ejemplo junto al cubo', () => {
+    render(<AlgoPlayer alg="F2" yellowUp instructions="Gira la cara frontal dos veces." instant />)
+    expect(screen.getByText('Gira la cara frontal dos veces.')).toBeInTheDocument()
+  })
+  it('también en los ejemplos estáticos', () => {
+    render(<AlgoPlayer alg="" setup="F2" yellowUp instructions="Así debe quedar." instant />)
+    expect(screen.getByText('Así debe quedar.')).toBeInTheDocument()
   })
   it('Reproducir recorre todo el algoritmo', async () => {
     const u = userEvent.setup()
