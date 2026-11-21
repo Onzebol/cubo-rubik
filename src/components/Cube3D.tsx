@@ -27,7 +27,7 @@ interface Props {
   focus?: Focus
   /** piezas (por colores, p. ej. 'GW') que se resaltan con un halo */
   highlight?: readonly string[]
-  /** ids de piezas que van en color aunque el foco las pondría en gris (ver `alwaysColored`) */
+  /** ids de piezas que van en color aunque el foco las pondría en gris (la pieza que se explica) */
   alsoColored?: readonly number[]
 }
 

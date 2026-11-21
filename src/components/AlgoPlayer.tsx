@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { invert, parseAlg } from '../cube/cube'
 import { createCubies, turnCubies } from '../cube/cubies'
 import type { Focus } from '../cube/focus'
-import { alwaysColored } from '../cube/coloring'
+import { explainedIds } from '../cube/coloring'
 import { explainedPieces } from '../cube/highlight'
 import { useAnimator } from '../useAnimator'
 import { Cube3D } from './Cube3D'
@@ -37,10 +37,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     () => explainedPieces({ alg, setup: setupAlg, yellowUp, focus: focus ?? 'all', highlight }),
     [alg, setupAlg, yellowUp, focus, highlight],
   )
-  const alsoColored = useMemo(
-    () => alwaysColored({ alg, setup: setupAlg, yellowUp, focus: focus ?? 'all' }),
-    [alg, setupAlg, yellowUp, focus],
-  )
+  const alsoColored = useMemo(() => explainedIds(explained, createCubies(yellowUp)), [explained, yellowUp])
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)

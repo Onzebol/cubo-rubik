@@ -1,6 +1,4 @@
 import { applyAlg, invert, solved, type Cube } from './cube/cube'
-import { createCubies, applyAlgToCubies } from './cube/cubies'
-import { isColored } from './cube/focus'
 import { LESSONS, type Demo, type Lesson } from './lessons'
 
 const nz = (p: number[]) => p.filter((v) => v !== 0).length
@@ -171,19 +169,6 @@ describe('capa del medio: las dos capas de abajo resueltas y una arista de arrib
     expect(bottomOk(a) && bottomOk(b)).toBe(true)
     const donde = b.find((t) => key(b, t.p) === 'GR' && t.p.filter((v) => v !== 0).length === 2)!
     expect(donde.p[1]).toBe(1)
-  })
-  it('la primera capa y la del medio nunca tienen cubos grises, ni al empezar ni al acabar', () => {
-    for (const id of ['izquierda', 'derecha', 'sacar']) {
-      const { l, d } = ejemplo(id)
-      const ini = applyAlgToCubies(createCubies(l.yellowUp), d.setup ?? invert(d.alg))
-      const fin = applyAlgToCubies(ini, d.alg)
-      for (const estado of [ini, fin]) {
-        for (const c of estado) {
-          if (c.p[1] > 0) continue
-          for (const f of c.faces) expect(isColored(d.focus ?? l.focus, c, f), `${id}: pieza en ${c.p}`).toBe(true)
-        }
-      }
-    }
   })
   it('cada ejemplo marca la arista que se coloca', () => {
     const l = lesson('capa-medio')

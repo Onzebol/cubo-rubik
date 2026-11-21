@@ -110,7 +110,7 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'capa-medio', stage: 'Capa del medio', title: 'Resolver la capa del medio', yellowUp: true, focus: 'two-layers',
+    id: 'capa-medio', stage: 'Capa del medio', title: 'Resolver la capa del medio', yellowUp: true, focus: 'white-layer',
     holding: 'Da la vuelta al cubo: la cara blanca completada abajo (D).',
     intro: 'Coloca las 4 aristas de la capa central, las que no llevan amarillo.',
     points: [

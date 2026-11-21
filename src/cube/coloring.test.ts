@@ -1,8 +1,8 @@
 import { LESSONS } from '../lessons'
-import { alwaysColored, stickerColored } from './coloring'
-import { applyAlgToCubies, createCubies } from './cubies'
+import { explainedIds, stickerColored } from './coloring'
+import { applyAlgToCubies, createCubies, type Cubie } from './cubies'
 import { invert, parseAlg } from './cube'
-import { isColored } from './focus'
+import { pieceKey } from './highlight'
 
 const demo = (lessonId: string, id: string) => {
   const l = LESSONS.find((x) => x.id === lessonId)!
@@ -16,49 +16,44 @@ const estados = (alg: string, setup: string | undefined, yellowUp: boolean) => {
   return out
 }
 
-describe('isColored es por pieza y no depende de dónde esté', () => {
-  it('two-layers: una esquina de arriba es gris esté donde esté', () => {
+describe('explainedIds', () => {
+  it('traduce las piezas explicadas (por colores) a los ids de sus cubies', () => {
     const cs = createCubies(true)
-    const esquina = cs.find((c) => c.home[1] === 1 && c.faces.length === 3)!
-    expect(esquina.faces.some((f) => isColored('two-layers', esquina, f))).toBe(false)
-    const abajo = { ...esquina, p: [1, -1, 1] as [number, number, number] }
-    expect(abajo.faces.some((f) => isColored('two-layers', abajo, f))).toBe(false)
+    const ids = explainedIds(['GR'], cs)
+    expect(ids).toHaveLength(1)
+    expect(pieceKey(cs.find((c) => c.id === ids[0])!)).toBe('GR')
+  })
+  it('sin piezas, no hay ids', () => {
+    expect(explainedIds([], createCubies(true))).toEqual([])
   })
 })
 
-describe('alwaysColored: piezas de arriba que bajan alguna vez a las dos capas inferiores', () => {
-  it('solo aplica al foco two-layers', () => {
-    expect(alwaysColored({ alg: "R U R' U'", yellowUp: true, focus: 'top-layer' })).toEqual([])
-    expect(alwaysColored({ alg: "R U R' U'", yellowUp: true, focus: 'all' })).toEqual([])
-  })
-  it('capa del medio: incluye las esquinas de arriba que se cuelan en la primera capa durante la receta', () => {
-    const { l, d } = demo('capa-medio', 'izquierda')
-    const ids = alwaysColored({ alg: d.alg, setup: d.setup, yellowUp: l.yellowUp, focus: l.focus })
-    expect(ids.length).toBeGreaterThan(0)
-    const cs = createCubies(l.yellowUp)
-    for (const id of ids) expect(cs.find((c) => c.id === id)!.home[1]).toBe(1) // solo piezas que serían grises
-  })
-})
-
-describe('el color de cada pieza es constante durante todo el ejemplo (sin parpadeos)', () => {
-  it.each(['izquierda', 'derecha', 'sacar'])('capa del medio, %s', (id) => {
+describe('capa del medio: color solo para la primera capa, los centros y la pieza que se coloca', () => {
+  it.each(['izquierda', 'derecha', 'sacar'])('%s', (id) => {
     const { l, d } = demo('capa-medio', id)
-    const extra = new Set(alwaysColored({ alg: d.alg, setup: d.setup, yellowUp: l.yellowUp, focus: l.focus }))
-    const firma = (cs: ReturnType<typeof createCubies>) =>
-      cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(l.focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const colored = (c: Cubie) => c.faces.map((f) => stickerColored(l.focus, extra, c, f))
+    for (const estado of estados(d.alg, d.setup, l.yellowUp)) {
+      for (const c of estado) {
+        const esCentro = c.faces.length === 1
+        const primeraCapa = c.faces.some((f) => f.c === 'W')
+        const laQueSeColoca = (d.highlight ?? []).includes(pieceKey(c))
+        const debeIrEnColor = esCentro || primeraCapa || laQueSeColoca
+        expect(colored(c).every(Boolean), `${id}: ${pieceKey(c)} debería ir ${debeIrEnColor ? 'en color' : 'en gris'}`).toBe(debeIrEnColor)
+      }
+    }
+  })
+  it('el color de cada pieza no cambia durante la animación', () => {
+    const { l, d } = demo('capa-medio', 'izquierda')
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(l.focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
     const todos = estados(d.alg, d.setup, l.yellowUp)
     for (const e of todos) expect(firma(e)).toBe(firma(todos[0]))
   })
-  it('y nada de lo que está en las dos capas de abajo es gris en ningún momento', () => {
-    for (const id of ['izquierda', 'derecha', 'sacar']) {
-      const { l, d } = demo('capa-medio', id)
-      const extra = new Set(alwaysColored({ alg: d.alg, setup: d.setup, yellowUp: l.yellowUp, focus: l.focus }))
-      for (const e of estados(d.alg, d.setup, l.yellowUp)) {
-        for (const c of e) {
-          if (c.p[1] > 0) continue
-          for (const f of c.faces) expect(stickerColored(l.focus, extra, c, f), `${id}: pieza ${c.id} en ${c.p}`).toBe(true)
-        }
-      }
-    }
+  it('en total: 20 pegatinas de la primera capa + 6 centros + 2 de la arista que se coloca', () => {
+    const { l, d } = demo('capa-medio', 'izquierda')
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(l.focus, extra, c, f))).length
+    expect(n).toBe(20 + 6 + 2)
   })
 })
