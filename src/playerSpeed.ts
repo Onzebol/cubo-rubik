@@ -9,5 +9,11 @@ export const moveMs = (speed: number): number => BASE_MOVE_MS / speed
 /** Pausa entre un movimiento y el siguiente al reproducir de seguido. */
 export const gapMs = (speed: number): number => BASE_GAP_MS / speed
 
+/** Un giro doble (F2, U2…) recorre el doble de ángulo: dura el doble para girar a la misma velocidad que uno simple. */
+export const DOUBLE_TURN_FACTOR = 2
+
+/** Duración real del giro de un movimiento: `ms` es la de un cuarto de vuelta. */
+export const turnMs = (ms: number, k: number): number => ms * (Math.abs(k) === 2 ? DOUBLE_TURN_FACTOR : 1)
+
 /** Segundos de cuenta atrás del botón «Reproducir con cuenta atrás». */
 export const COUNTDOWN_SECONDS = 3
