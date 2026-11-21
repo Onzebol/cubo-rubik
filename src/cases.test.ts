@@ -1,4 +1,6 @@
 import { applyAlg, invert, solved, type Cube } from './cube/cube'
+import { applyAlgToCubies, createCubies, type Cubie } from './cube/cubies'
+import { explainedPieces, pieceKey } from './cube/highlight'
 import { LESSONS, type Demo, type Lesson } from './lessons'
 
 const nz = (p: number[]) => p.filter((v) => v !== 0).length
@@ -250,6 +252,102 @@ describe('colocar esquinas: el caso de las diagonales lleva al de las contiguas'
       [0, 1, 2, 3].some((r) => ['', 'U', 'U2', "U'"].some((v) => bienColocadas(aplicar(`${base} ${u} ${yrot(d.alg, r)} ${v}`), l.yellowUp).length === 4)),
     )
     expect(resuelve).toBe(true)
+  })
+})
+
+describe('primera capa: lo que se ve en cada ejemplo coincide con lo que dice el texto', () => {
+  /** Dónde está una pieza con blanco y hacia dónde mira su pegatina blanca. */
+  const donde = (cs: Cubie[], clave: string) => {
+    const c = cs.find((x) => pieceKey(x) === clave)!
+    const w = c.faces.find((f) => f.c === 'W')!
+    const n = [0, 1, 2].map((r) => c.cols[0][r] * w.n[0] + c.cols[1][r] * w.n[1] + c.cols[2][r] * w.n[2])
+    const mira = n[1] === 1 ? 'arriba' : n[1] === -1 ? 'abajo' : n[0] === 1 ? 'derecha' : n[0] === -1 ? 'izquierda' : n[2] === 1 ? 'frente' : 'atrás'
+    return `${c.p.join(',')} blanco→${mira}`
+  }
+  const estados = (lessonId: string, id: string) => {
+    const [l, d] = demo(lessonId, id)
+    const ini = applyAlgToCubies(createCubies(l.yellowUp), d.setup ?? invert(d.alg))
+    return { l, d, ini, fin: applyAlgToCubies(ini, d.alg) }
+  }
+  const halo = (lessonId: string, id: string) => {
+    const { l, d } = estados(lessonId, id)
+    return explainedPieces({ alg: d.alg, setup: d.setup, yellowUp: l.yellowUp, focus: l.focus, highlight: d.highlight })
+  }
+
+  describe('margarita', () => {
+    it('arriba con el blanco en el lateral: la arista está arriba a la derecha con el blanco a la derecha; solo ella brilla', () => {
+      const { ini, fin } = estados('margarita', 'arriba-lateral')
+      expect(donde(ini, 'GW')).toBe('1,1,0 blanco→derecha')
+      expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
+      expect(halo('margarita', 'arriba-lateral')).toEqual(['GW'])
+    })
+    it('capa del medio, blanco a la derecha: en la esquina frontal-derecha; sube con el blanco arriba', () => {
+      const { ini, fin } = estados('margarita', 'medio-derecha')
+      expect(donde(ini, 'GW')).toBe('1,0,1 blanco→derecha')
+      expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
+      expect(halo('margarita', 'medio-derecha')).toEqual(['GW'])
+    })
+    it('capa del medio, blanco al frente: en la esquina frontal-derecha; sube con el blanco arriba', () => {
+      const { ini, fin } = estados('margarita', 'medio-frente')
+      expect(donde(ini, 'OW')).toBe('1,0,1 blanco→frente')
+      expect(donde(fin, 'OW')).toBe('1,1,0 blanco→arriba')
+      expect(halo('margarita', 'medio-frente')).toEqual(['OW'])
+    })
+    it('abajo con el blanco abajo: bajo un hueco libre de arriba; el texto avisa de que el blanco no se ve', () => {
+      const { d, ini, fin } = estados('margarita', 'abajo-blanco-abajo')
+      expect(donde(ini, 'GW')).toBe('0,-1,1 blanco→abajo')
+      expect(ini.some((c) => c.faces.length === 2 && c.p.join() === '0,1,1' && c.faces.some((f) => f.c === 'W'))).toBe(false) // hueco libre
+      expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
+      expect(d.instructions).toContain('arrastra')
+    })
+    it('abajo con el blanco en el lateral: abajo con el blanco a la derecha; solo ella brilla', () => {
+      const { ini, fin } = estados('margarita', 'abajo-lateral')
+      expect(donde(ini, 'GW')).toBe('1,-1,0 blanco→derecha')
+      expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
+      expect(halo('margarita', 'abajo-lateral')).toEqual(['GW'])
+    })
+    it('hueco ocupado: un pétalo ya arriba delante y la arista del medio con el blanco a la derecha; brillan las dos', () => {
+      const { ini, fin } = estados('margarita', 'chocar')
+      expect(donde(ini, 'OW')).toBe('0,1,1 blanco→arriba')
+      expect(donde(ini, 'GW')).toBe('1,0,1 blanco→derecha')
+      expect(donde(fin, 'OW')).toBe('1,1,0 blanco→arriba')
+      expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
+      expect([...halo('margarita', 'chocar')].sort()).toEqual(['GW', 'OW'])
+    })
+  })
+
+  describe('cruz blanca', () => {
+    it('coincide: el pétalo está delante con el verde al frente, igual que el centro frontal', () => {
+      const { l, ini, fin } = estados('cruz-blanca', 'coincide')
+      expect(donde(ini, 'GW')).toBe('0,1,1 blanco→arriba')
+      const verde = ini.find((c) => pieceKey(c) === 'GW')!.faces.find((f) => f.c === 'G')!
+      expect(verde.c).toBe(solved(l.yellowUp).find((t) => t.p.join() === '0,0,1')!.c) // centro frontal
+      expect(donde(fin, 'GW')).toBe('0,-1,1 blanco→abajo')
+    })
+    it("no coincide: el pétalo está arriba a la izquierda, su verde mira al centro izquierdo (rojo); U' lo lleva delante", () => {
+      const { l, d, ini, fin } = estados('cruz-blanca', 'no-coincide')
+      expect(donde(ini, 'GW')).toBe('-1,1,0 blanco→arriba')
+      const centroIzquierdo = solved(l.yellowUp).find((t) => t.p.join() === '-1,0,0')!.c
+      expect(centroIzquierdo).not.toBe('G')
+      expect(donde(fin, 'GW')).toBe('0,-1,1 blanco→abajo')
+      expect(d.instructions).toContain('izquierdo')
+      expect(d.instructions).not.toContain('color frontal de la arista')
+    })
+  })
+
+  describe('esquinas blancas', () => {
+    it('arriba mal colocada: una esquina ajena en arriba-delante-derecha; solo ella brilla', () => {
+      const { ini, fin } = estados('esquinas-blancas', 'arriba-mal')
+      expect(donde(ini, 'GOW')).toBe('1,1,1 blanco→derecha')
+      expect(donde(fin, 'GOW').startsWith('-1,-1,1')).toBe(true) // acaba en la capa de abajo
+      expect(halo('esquinas-blancas', 'arriba-mal')).toEqual(['GOW'])
+    })
+    it('blanco abajo: bajo su hueco, blanco hacia abajo; el algoritmo lo pasa al frente; el texto avisa de que no se ve', () => {
+      const { d, ini, fin } = estados('esquinas-blancas', 'blanco-abajo')
+      expect(donde(ini, 'GRW')).toBe('1,-1,1 blanco→abajo')
+      expect(donde(fin, 'GRW')).toBe('1,-1,1 blanco→frente')
+      expect(d.instructions).toContain('arrastra')
+    })
   })
 })
 

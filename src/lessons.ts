@@ -76,11 +76,11 @@ export const LESSONS: Lesson[] = [
     demos: [
       { id: 'final', title: 'Así debe quedar la margarita', instructions: "Mira cómo debe acabar este paso: las 4 aristas blancas arriba, alrededor del centro amarillo, con el blanco hacia arriba. El otro color de cada arista no importa.", alg: '', setup: "F2 R2 B2 L2" },
       { id: 'arriba-bien', title: 'Arriba con el blanco hacia arriba: déjala', instructions: "Esta arista blanca está en la capa de arriba y su pegatina blanca mira hacia arriba: ya está bien. No la muevas y trabaja con las demás.", alg: '', setup: 'F2', highlight: ['GW'] },
-      { id: 'arriba-lateral', title: 'Arriba con el blanco en el lateral: voltéala', instructions: "La arista está en la capa de arriba, pero su blanco mira al lateral. Gira el cubo para que quede en la cara derecha y haz R' U F': R' la baja, U aparta lo que estorba y F' la sube con el blanco hacia arriba.", alg: "R' U F'", setup: "F' R" },
+      { id: 'arriba-lateral', title: 'Arriba con el blanco en el lateral: voltéala', instructions: "La arista está en la capa de arriba, pero su blanco mira al lateral. Gira el cubo para que quede en la cara derecha y haz R' U F': R' la baja, U aparta lo que estorba y F' la sube con el blanco hacia arriba. El resto de aristas blancas no importan en este ejemplo.", alg: "R' U F'", setup: "F' R", highlight: ['GW'] },
       { id: 'medio-derecha', title: 'Capa del medio, blanco en la cara derecha', instructions: "La arista está en la capa del medio, en la esquina frontal-derecha, y su blanco mira a la derecha. Gira F' y el blanco sube a la cara de arriba.", alg: "F'", setup: "F'" },
       { id: 'medio-frente', title: 'Capa del medio, blanco en la cara frontal', instructions: "La arista está en la capa del medio, en la esquina frontal-derecha, y su blanco mira al frente. Gira R y el blanco sube a la cara de arriba.", alg: 'R', setup: 'R' },
-      { id: 'abajo-blanco-abajo', title: 'Capa de abajo, blanco hacia abajo', instructions: "La arista está abajo con el blanco hacia abajo, justo debajo de un hueco libre de la margarita. Gira la cara frontal media vuelta (F2). Si no estuviera bajo un hueco libre, gira D antes hasta ponerla.", alg: 'F2', setup: '' },
-      { id: 'abajo-lateral', title: 'Capa de abajo, blanco en el lateral', instructions: "La arista está abajo y su blanco mira a un lado (aquí, a la derecha). Gira R para subirla al medio y luego F' para subirla a la capa de arriba.", alg: "R F'", setup: "F' R'" },
+      { id: 'abajo-blanco-abajo', title: 'Capa de abajo, blanco hacia abajo', instructions: "La arista está abajo con el blanco hacia abajo, justo debajo de un hueco libre de la margarita (el blanco queda por debajo y no se ve desde aquí: arrastra el cubo para mirar). Gira la cara frontal media vuelta (F2). Si no estuviera bajo un hueco libre, gira D antes hasta ponerla.", alg: 'F2', setup: '' },
+      { id: 'abajo-lateral', title: 'Capa de abajo, blanco en el lateral', instructions: "La arista está abajo y su blanco mira a un lado (aquí, a la derecha). Gira R para subirla al medio y luego F' para subirla a la capa de arriba. El resto de aristas blancas no importan en este ejemplo.", alg: "R F'", setup: "F' R'", highlight: ['GW'] },
       { id: 'chocar', title: 'Hueco ocupado: aparta el pétalo antes', instructions: "El hueco al que va a subir la arista ya tiene un pétalo. Primero U' para apartarlo y después F' para subir la otra sin tirar el pétalo que ya tenías. Es el error más común.", alg: "U' F'", setup: "R2 F' U" },
     ],
   },
@@ -94,7 +94,7 @@ export const LESSONS: Lesson[] = [
     ],
     demos: [
       { id: 'coincide', title: 'El color frontal coincide', instructions: "El color frontal de la arista de arriba (verde) coincide con el centro frontal (verde). Gira la cara frontal media vuelta (F2) y el blanco baja a la cara de abajo.", alg: 'F2', setup: 'F2' },
-      { id: 'no-coincide', title: 'No coincide: gira U primero', instructions: "El color frontal de la arista no coincide con el centro frontal. Gira U hasta que coincida (aquí U') y después F2 para bajar el blanco.", alg: "U' F2", setup: 'F2 U' },
+      { id: 'no-coincide', title: 'No coincide: gira U primero', instructions: "La arista está arriba a la izquierda y su verde mira al centro izquierdo, que es rojo: no es el suyo. Gira U hasta que su verde coincida con el centro verde (aquí U', que la lleva delante) y después F2 para bajar el blanco.", alg: "U' F2", setup: 'F2 U' },
     ],
   },
   {
@@ -106,7 +106,7 @@ export const LESSONS: Lesson[] = [
       "Repite hasta tener las 4 esquinas blancas.",
     ],
     demos: [
-      { id: 'arriba-mal', title: 'Esquina blanca arriba pero mal colocada', instructions: "Hay una esquina con blanco en la capa de arriba, pero no es la que va en ese hueco (aquí, arriba delante a la derecha). R' D' R la baja a la capa de abajo; después colócala como en los casos siguientes.", alg: "R' D' R", setup: "L D L' D' R' D R D'" },
+      { id: 'arriba-mal', title: 'Esquina blanca arriba pero mal colocada', instructions: "Hay una esquina con blanco en la capa de arriba, pero no es la que va en ese hueco (aquí, arriba delante a la derecha). R' D' R la baja a la capa de abajo; después colócala como en los casos siguientes. El resto de esquinas blancas no importan en este ejemplo.", alg: "R' D' R", setup: "L D L' D' R' D R D'", highlight: ['GOW'] },
       { id: 'blanco-abajo', title: 'Blanco mirando hacia abajo', instructions: "La esquina está abajo, delante a la derecha (justo bajo su hueco), con el blanco hacia abajo (desde aquí no se ve: arrastra el cubo para mirar por debajo). Con la esquina en la cara derecha, F D' F' D2 pasa el blanco al frente; después sigue con «Esquina a la derecha, blanco al frente».", alg: "F D' F' D2", setup: "D' R' D R D2 R' D' R" },
       { id: 'izquierda', title: 'Esquina a la izquierda, blanco al frente', instructions: "La esquina está abajo, delante a la izquierda, justo bajo su hueco (entre los centros de sus dos colores), con el blanco mirando al frente. D L D' L' la sube a su sitio con el blanco arriba.", alg: "D L D' L'" },
       { id: 'derecha', title: 'Esquina a la derecha, blanco al frente', instructions: "La esquina está abajo, delante a la derecha, justo bajo su hueco (entre los centros de sus dos colores), con el blanco mirando al frente. D' R' D R la sube a su sitio con el blanco arriba.", alg: "D' R' D R" },
