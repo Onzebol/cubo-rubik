@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AlgoPlayer } from './AlgoPlayer'
 
@@ -53,6 +53,38 @@ describe('AlgoPlayer', () => {
   it('resalta la pieza que explica el ejemplo (halo)', () => {
     const { container } = render(<AlgoPlayer alg="F2" setup="" yellowUp focus="white-edges" instant />)
     expect(container.querySelectorAll('.sticker.hl').length).toBeGreaterThan(0)
+  })
+  describe('con animación real, la ficha se marca cuando EMPIEZA el movimiento', () => {
+    it('Siguiente: marcada de inmediato, antes de que acabe el giro', async () => {
+      const u = userEvent.setup()
+      render(<AlgoPlayer alg="R U" yellowUp={false} />)
+      await u.click(screen.getByRole('button', { name: 'Siguiente' }))
+      expect(screen.getByText('0 / 2')).toBeInTheDocument() // el giro aún no ha terminado
+      expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
+      expect(await screen.findByText('1 / 2', {}, { timeout: 3000 })).toBeInTheDocument()
+      expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
+    })
+    it('Reproducir: cada ficha se marca al empezar su giro', async () => {
+      const u = userEvent.setup()
+      render(<AlgoPlayer alg="R U" yellowUp={false} />)
+      await u.click(screen.getByRole('button', { name: 'Reproducir' }))
+      const fichas = screen.getAllByRole('listitem')
+      expect(fichas[0]).toHaveAttribute('aria-current', 'step')
+      await waitFor(() => expect(fichas[1]).toHaveAttribute('aria-current', 'step'), { timeout: 3000 })
+      expect(screen.getByText('1 / 2')).toBeInTheDocument() // el segundo giro aún no ha terminado
+      expect(fichas[0]).not.toHaveAttribute('aria-current')
+      expect(await screen.findByText('2 / 2', {}, { timeout: 3000 })).toBeInTheDocument()
+    })
+    it('Anterior: la ficha que se deshace sigue marcada mientras gira y luego se desmarca', async () => {
+      const u = userEvent.setup()
+      render(<AlgoPlayer alg="R U" yellowUp={false} />)
+      await u.click(screen.getByRole('button', { name: 'Siguiente' }))
+      await screen.findByText('1 / 2', {}, { timeout: 3000 })
+      await u.click(screen.getByRole('button', { name: 'Anterior' }))
+      expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('aria-current', 'step')
+      await screen.findByText('0 / 2', {}, { timeout: 3000 })
+      expect(screen.getAllByRole('listitem')[0]).not.toHaveAttribute('aria-current')
+    })
   })
   it('Reproducir recorre todo el algoritmo', async () => {
     const u = userEvent.setup()

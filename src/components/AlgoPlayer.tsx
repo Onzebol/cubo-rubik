@@ -37,6 +37,8 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     [alg, setupAlg, yellowUp, focus, highlight],
   )
   const [index, setIndex] = useState(0)
+  /** movimiento que se está animando ahora mismo: se marca desde que empieza, no cuando acaba */
+  const [active, setActive] = useState<number | null>(null)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const idx = useRef(0)
@@ -52,18 +54,22 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
   const forward = async () => {
     if (busy.current || idx.current >= moves.length) return
     busy.current = true
+    setActive(idx.current)
     await anim.move(moves[idx.current], ms())
     idx.current += 1
     setIndex(idx.current)
+    setActive(null)
     busy.current = false
   }
   const back = async () => {
     if (busy.current || idx.current <= 0) return
     busy.current = true
     const m = moves[idx.current - 1]
+    setActive(idx.current - 1) // el que se deshace sigue marcado mientras gira
     await anim.move({ face: m.face, k: m.k === 2 ? 2 : ((-m.k) as 1 | -1), name: m.name }, ms())
     idx.current -= 1
     setIndex(idx.current)
+    setActive(null)
     busy.current = false
   }
   const reset = () => {
@@ -72,6 +78,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     busy.current = false
     idx.current = 0
     setIndex(0)
+    setActive(null)
     anim.reset(setup())
   }
   const play = async () => {
@@ -106,7 +113,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
       <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
-          <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === index - 1 ? 'step' : undefined}>
+          <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === (active ?? index - 1) ? 'step' : undefined}>
             {m.name}
           </li>
         ))}

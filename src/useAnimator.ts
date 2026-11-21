@@ -26,9 +26,10 @@ export function useAnimator(initial: () => Cubie[], instant = false) {
     }
     const duration = ms * (Math.abs(m.k) === 2 ? 1.5 : 1)
     const start = performance.now()
-    const tick = (now: number) => {
+    const tick = () => {
       if (!alive.current) return resolve()
-      const t = Math.min(1, (now - start) / duration)
+      // mismo reloj que `start` (el argumento de rAF puede ir en otra escala, p. ej. en jsdom)
+      const t = Math.min(1, (performance.now() - start) / duration)
       if (t < 1) {
         setTurn({ face: m.face, turns: m.k * ease(t) })
         raf.current = requestAnimationFrame(tick)
