@@ -4,6 +4,7 @@ import { createCubies, turnCubies } from '../cube/cubies'
 import type { Focus } from '../cube/focus'
 import { explainedIds } from '../cube/coloring'
 import { explainedPieces } from '../cube/highlight'
+import { COUNTDOWN_SECONDS, SPEEDS, gapMs, moveMs } from '../playerSpeed'
 import { useAnimator } from '../useAnimator'
 import { Cube3D } from './Cube3D'
 
@@ -21,7 +22,6 @@ interface Props {
   instant?: boolean
 }
 
-const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
@@ -42,16 +42,19 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
   /** movimiento que se está animando ahora mismo: en amarillo desde que empieza y hasta que acaba */
   const [active, setActive] = useState<number | null>(null)
   const [playing, setPlaying] = useState(false)
-  const [speed, setSpeed] = useState(1)
+  const [speed, setSpeed] = useState<number>(SPEEDS[0])
+  /** segundos que quedan de la cuenta atrás (null = no hay cuenta atrás en marcha) */
+  const [countdown, setCountdown] = useState<number | null>(null)
   const idx = useRef(0)
   const busy = useRef(false)
   const playRef = useRef(false)
+  const countdownRef = useRef(false)
   const speedRef = useRef(1)
   useEffect(() => { speedRef.current = speed }, [speed])
 
-  useEffect(() => () => { playRef.current = false }, [])
+  useEffect(() => () => { playRef.current = false; countdownRef.current = false }, [])
 
-  const ms = () => (instant ? 0 : BASE_MS / speedRef.current)
+  const ms = () => (instant ? 0 : moveMs(speedRef.current))
 
   const forward = async () => {
     if (busy.current || idx.current >= moves.length) return
@@ -76,6 +79,8 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
   }
   const reset = () => {
     playRef.current = false
+    countdownRef.current = false
+    setCountdown(null)
     setPlaying(false)
     busy.current = false
     idx.current = 0
@@ -90,13 +95,30 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     setPlaying(true)
     while (playRef.current && idx.current < moves.length) {
       await forward()
-      if (!instant) await wait(160 / speedRef.current)
+      if (!instant) await wait(gapMs(speedRef.current))
     }
     playRef.current = false
     setPlaying(false)
   }
 
+  /** Cuenta 3, 2, 1 y luego reproduce desde el principio. Volver a pulsar la cancela. */
+  const playWithCountdown = async () => {
+    if (countdownRef.current) { countdownRef.current = false; setCountdown(null); return }
+    if (playRef.current || busy.current) return
+    if (idx.current >= moves.length) reset()
+    countdownRef.current = true
+    for (let n = COUNTDOWN_SECONDS; n >= 1; n--) {
+      setCountdown(n)
+      await wait(1000)
+      if (!countdownRef.current) return
+    }
+    countdownRef.current = false
+    setCountdown(null)
+    await play()
+  }
+
   const done = index === moves.length
+  const counting = countdown !== null
 
   if (moves.length === 0) {
     return (
@@ -112,7 +134,10 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
         {instructions && <p className="instructions">{instructions}</p>}
-      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} alsoColored={alsoColored} />
+      <div className="stage">
+        <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} alsoColored={alsoColored} />
+        {countdown !== null && <div className="countdown" role="timer" aria-live="assertive">{countdown}</div>}
+      </div>
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
           <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === active ? 'step' : undefined}>
@@ -126,17 +151,24 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
       </p>
       <div className="controls">
         <button type="button" onClick={reset} aria-label="Reiniciar">⏮</button>
-        <button type="button" onClick={back} disabled={index === 0 || playing} aria-label="Anterior">◀</button>
-        <button type="button" className="primary" onClick={play} aria-label={playing ? 'Pausar' : 'Reproducir'}>
+        <button type="button" onClick={back} disabled={index === 0 || playing || counting} aria-label="Anterior">◀</button>
+        <button type="button" className="primary" onClick={play} disabled={counting} aria-label={playing ? 'Pausar' : 'Reproducir'}>
           {playing ? '⏸' : '▶'}
         </button>
-        <button type="button" onClick={forward} disabled={done || playing} aria-label="Siguiente">▶|</button>
+        <button type="button" onClick={forward} disabled={done || playing || counting} aria-label="Siguiente">▶|</button>
+        <button
+          type="button"
+          className="countdown-btn"
+          onClick={playWithCountdown}
+          disabled={playing}
+          aria-label={counting ? 'Cancelar cuenta atrás' : 'Reproducir con cuenta atrás'}
+        >
+          {counting ? '✕' : `▶ ${COUNTDOWN_SECONDS} s`}
+        </button>
         <label className="speed">
           <span className="sr-only">Velocidad</span>
           <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>
-            <option value={0.5}>0,5×</option>
-            <option value={1}>1×</option>
-            <option value={2}>2×</option>
+            {SPEEDS.map((v) => <option key={v} value={v}>{v}×</option>)}
           </select>
         </label>
       </div>
