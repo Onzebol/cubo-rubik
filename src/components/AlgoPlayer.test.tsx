@@ -27,6 +27,21 @@ describe('AlgoPlayer', () => {
     await u.click(screen.getByRole('button', { name: 'Reiniciar' }))
     expect(await screen.findByText('0 / 2')).toBeInTheDocument()
   })
+  it('con setup parte de esa situación y no del inverso', () => {
+    const t = (c: HTMLElement) => [...c.querySelectorAll<HTMLElement>('.cubie')].map((e) => e.style.transform).join('|')
+    const resuelto = render(<AlgoPlayer alg="F2" setup="" yellowUp instant />).container
+    const porDefecto = render(<AlgoPlayer alg="F2" yellowUp instant />).container
+    // por defecto parte del inverso (F2 aplicado); con setup vacío, del cubo resuelto
+    expect(t(resuelto)).not.toBe(t(porDefecto))
+    expect(screen.getAllByText('0 / 1')).toHaveLength(2)
+  })
+  it('sin movimientos es un ejemplo estático: solo el cubo y la nota', () => {
+    render(<AlgoPlayer alg="" setup="F2" yellowUp instant title="Resultado" note="Así debe quedar" />)
+    expect(screen.getByText('Resultado')).toBeInTheDocument()
+    expect(screen.getByText('Así debe quedar')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Siguiente' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('list')).not.toBeInTheDocument()
+  })
   it('Reproducir recorre todo el algoritmo', async () => {
     const u = userEvent.setup()
     render(<AlgoPlayer alg="R U R' U'" yellowUp={false} instant />)
