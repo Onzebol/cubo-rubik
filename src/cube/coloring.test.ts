@@ -1,5 +1,5 @@
 import { LESSONS } from '../lessons'
-import { explainedIds, stickerColored } from './coloring'
+import { alsoColoredIds, explainedIds, stickerColored } from './coloring'
 import { applyAlgToCubies, createCubies, type Cubie } from './cubies'
 import { invert, parseAlg } from './cube'
 import { pieceKey } from './highlight'
@@ -55,5 +55,62 @@ describe('capa del medio: color solo para la primera capa, los centros y la piez
     const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
     const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(l.focus, extra, c, f))).length
     expect(n).toBe(20 + 6 + 2)
+  })
+})
+
+describe('cruz amarilla: en color las dos primeras capas, los centros y las aristas de arriba', () => {
+  it.each(['linea', 'ele'])('%s', (id) => {
+    const { l, d } = demo('cruz-amarilla', id)
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(l.focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
+    const todos = estados(d.alg, d.setup, l.yellowUp)
+    for (const estado of todos) {
+      expect(firma(estado)).toBe(firma(todos[0])) // el color no cambia durante la animación
+      for (const c of estado) {
+        const esCentro = c.faces.length === 1
+        const dosPrimerasCapas = c.home[1] <= 0
+        const arista = (d.highlight ?? []).includes(pieceKey(c))
+        const debeIrEnColor = esCentro || dosPrimerasCapas || arista
+        expect(c.faces.every((f) => stickerColored(l.focus, extra, c, f)), `${id}: ${pieceKey(c)}`).toBe(debeIrEnColor)
+      }
+    }
+  })
+  it('en total: 28 pegatinas de las dos primeras capas + 6 centros + 8 de las aristas de arriba', () => {
+    const { l, d } = demo('cruz-amarilla', 'ele')
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(l.focus, extra, c, f))).length
+    expect(n).toBe(28 + 6 + 8)
+  })
+})
+
+describe('cruz amarilla, punto: dos primeras capas en color y, arriba, solo las pegatinas amarillas', () => {
+  it('el foco decide por pegatina, así que la pieza resaltada no se pinta entera', () => {
+    const cs = createCubies(true)
+    expect(alsoColoredIds('two-layers-yellow', ['BY', 'RY'], cs)).toEqual([])
+    expect(alsoColoredIds('white-layer', ['BY'], cs)).toEqual(explainedIds(['BY'], cs))
+  })
+  it('en cada estado: color en centros, dos primeras capas y pegatinas amarillas; el resto, gris; sin cambios durante la animación', () => {
+    const { l, d } = demo('cruz-amarilla', 'punto')
+    const focus = d.focus ?? l.focus
+    expect(focus).toBe('two-layers-yellow')
+    const extra = new Set(alsoColoredIds(focus, d.highlight ?? [], createCubies(l.yellowUp)))
+    const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
+    const todos = estados(d.alg, d.setup, l.yellowUp)
+    for (const estado of todos) {
+      expect(firma(estado)).toBe(firma(todos[0]))
+      for (const c of estado) {
+        for (const f of c.faces) {
+          const debe = c.faces.length === 1 || c.home[1] <= 0 || f.c === 'Y'
+          expect(stickerColored(focus, extra, c, f), `${pieceKey(c)} ${f.c}`).toBe(debe)
+        }
+      }
+    }
+  })
+  it('en total: 28 de las dos primeras capas + 8 amarillas de arriba + 6 centros', () => {
+    const { l, d } = demo('cruz-amarilla', 'punto')
+    const focus = d.focus ?? l.focus
+    const extra = new Set(alsoColoredIds(focus, d.highlight ?? [], createCubies(l.yellowUp)))
+    const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(focus, extra, c, f))).length
+    expect(n).toBe(28 + 8 + 6)
   })
 })

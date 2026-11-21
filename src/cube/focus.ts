@@ -5,6 +5,8 @@ export type Focus =
   | 'all'
   | 'white-edges'
   | 'white-layer'
+  | 'first-two-layers'
+  | 'two-layers-yellow'
   | 'top-face'
   | 'top-corners'
   | 'top-layer'
@@ -18,6 +20,9 @@ export function isColored(focus: Focus, c: Cubie, face: CubieFace): boolean {
   switch (focus) {
     case 'white-edges': return c.faces.length === 2 && c.faces.some((f) => f.c === 'W')
     case 'white-layer': return c.faces.some((f) => f.c === 'W')
+    // dos primeras capas terminadas (en color) y, de la última capa, solo su pegatina amarilla
+    case 'two-layers-yellow': return c.home[1] <= 0 || face.c === 'Y'
+    case 'first-two-layers': return c.home[1] <= 0 // primera y segunda capa, ya terminadas
     case 'top-face': return top && face.n[1] === 1
     case 'top-corners': return top && c.faces.length === 3
     case 'top-layer': return top
