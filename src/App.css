@@ -71,6 +71,7 @@ button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible
 .label { font-weight: 800; font-size: 18px; color: rgba(0,0,0,.45); }
 .c-W { background: #f4f4f4; } .c-Y { background: #ffd500; } .c-G { background: #009b48; }
 .c-gray { background: #6b7280; }
+.sticker.hl { box-shadow: 0 0 0 2px #fff, 0 0 5px 2px var(--accent); }
 .c-B { background: #0046ad; } .c-R { background: #b71234; } .c-O { background: #ff5800; }
 @media (min-width: 480px) { .cube3d { height: 340px; } .pad { grid-template-columns: repeat(3, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }

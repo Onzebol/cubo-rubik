@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { invert, parseAlg } from '../cube/cube'
 import { createCubies, turnCubies } from '../cube/cubies'
 import type { Focus } from '../cube/focus'
+import { explainedPieces } from '../cube/highlight'
 import { useAnimator } from '../useAnimator'
 import { Cube3D } from './Cube3D'
 
@@ -14,6 +15,8 @@ interface Props {
   /** qué se ve y qué hay que hacer en este caso */
   instructions?: string
   focus?: Focus
+  /** piezas a resaltar indicadas a mano; por defecto, las que mueve el algoritmo */
+  highlight?: string[]
   instant?: boolean
 }
 
@@ -21,7 +24,7 @@ const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
-export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions, focus, instant = false }: Props) {
+export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions, focus, highlight, instant = false }: Props) {
   const moves = useMemo(() => parseAlg(alg), [alg])
   const setup = () => {
     let cs = createCubies(yellowUp)
@@ -29,6 +32,10 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     return cs
   }
   const anim = useAnimator(setup, instant)
+  const explained = useMemo(
+    () => explainedPieces({ alg, setup: setupAlg, yellowUp, focus: focus ?? 'all', highlight }),
+    [alg, setupAlg, yellowUp, focus, highlight],
+  )
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
@@ -87,7 +94,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
       <figure className="player">
         {title && <figcaption><strong>{title}</strong></figcaption>}
         {instructions && <p className="instructions">{instructions}</p>}
-        <Cube3D cubies={anim.cubies} focus={focus} />
+        <Cube3D cubies={anim.cubies} focus={focus} highlight={explained} />
       </figure>
     )
   }
@@ -96,7 +103,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
         {instructions && <p className="instructions">{instructions}</p>}
-      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} />
+      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
           <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === index - 1 ? 'step' : undefined}>
