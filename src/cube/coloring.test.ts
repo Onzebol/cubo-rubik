@@ -1,5 +1,5 @@
 import { LESSONS } from '../lessons'
-import { explainedIds, stickerColored } from './coloring'
+import { alsoColoredIds, explainedIds, stickerColored } from './coloring'
 import { applyAlgToCubies, createCubies, type Cubie } from './cubies'
 import { invert, parseAlg } from './cube'
 import { pieceKey } from './highlight'
@@ -59,7 +59,7 @@ describe('capa del medio: color solo para la primera capa, los centros y la piez
 })
 
 describe('cruz amarilla: en color las dos primeras capas, los centros y las aristas de arriba', () => {
-  it.each(['punto', 'linea', 'ele'])('%s', (id) => {
+  it.each(['linea', 'ele'])('%s', (id) => {
     const { l, d } = demo('cruz-amarilla', id)
     const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
     const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(l.focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
@@ -80,5 +80,29 @@ describe('cruz amarilla: en color las dos primeras capas, los centros y las aris
     const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
     const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(l.focus, extra, c, f))).length
     expect(n).toBe(28 + 6 + 8)
+  })
+})
+
+describe('cruz amarilla, punto: solo se pintan las pegatinas amarillas', () => {
+  it('el foco yellow-stickers decide por pegatina, así que la pieza resaltada no se pinta entera', () => {
+    const cs = createCubies(true)
+    expect(alsoColoredIds('yellow-stickers', ['BY', 'RY'], cs)).toEqual([])
+    expect(alsoColoredIds('white-layer', ['BY'], cs)).toEqual(explainedIds(['BY'], cs))
+  })
+  it('en cada estado: en color solo las pegatinas amarillas y los centros; el resto, gris; y sin cambios durante la animación', () => {
+    const { l, d } = demo('cruz-amarilla', 'punto')
+    const focus = d.focus ?? l.focus
+    expect(focus).toBe('yellow-stickers')
+    const extra = new Set(alsoColoredIds(focus, d.highlight ?? [], createCubies(l.yellowUp)))
+    const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
+    const todos = estados(d.alg, d.setup, l.yellowUp)
+    for (const estado of todos) {
+      expect(firma(estado)).toBe(firma(todos[0]))
+      for (const c of estado) {
+        for (const f of c.faces) {
+          expect(stickerColored(focus, extra, c, f), `${pieceKey(c)} ${f.c}`).toBe(c.faces.length === 1 || f.c === 'Y')
+        }
+      }
+    }
   })
 })

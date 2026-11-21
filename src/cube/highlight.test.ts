@@ -36,9 +36,12 @@ describe('explainedPieces: la porción del cubo que se explica', () => {
     expect(pieces('orientar-esquinas', 'pez')).toEqual([])
   })
   it('cruz amarilla: se resaltan las 4 aristas de arriba, las que forman la cruz', () => {
-    for (const id of ['punto', 'linea', 'ele']) {
+    for (const id of ['linea', 'ele']) {
       expect(pieces('cruz-amarilla', id), id).toEqual(['BY', 'GY', 'OY', 'RY'])
     }
+  })
+  it('cruz amarilla, punto: solo las dos aristas que acabarán arriba (la línea)', () => {
+    expect(pieces('cruz-amarilla', 'punto')).toEqual(['BY', 'RY'])
   })
   it('nunca resalta centros ni piezas fuera del foco', () => {
     for (const l of LESSONS) for (const d of l.demos) {

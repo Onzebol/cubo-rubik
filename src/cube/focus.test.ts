@@ -12,7 +12,7 @@ describe('foco de los ejemplos', () => {
     expect(coloreadas('all')).toBe(54)
   })
   it('los centros siempre van en color (6)', () => {
-    for (const f of ['white-edges', 'white-layer', 'top-face', 'top-corners', 'top-layer', 'first-two-layers'] as Focus[]) {
+    for (const f of ['white-edges', 'white-layer', 'top-face', 'top-corners', 'top-layer', 'first-two-layers', 'yellow-stickers'] as Focus[]) {
       const cs = createCubies(true)
       const centros = cs.filter((c) => c.faces.length === 1)
       expect(centros.every((c) => isColored(f, c, c.faces[0])), f).toBe(true)
@@ -26,6 +26,14 @@ describe('foco de los ejemplos', () => {
   })
   it('top-face: solo las 4 aristas y 4 esquinas de la cara de arriba (8) + 6 centros... el de arriba cuenta una vez', () => {
     expect(coloreadas('top-face')).toBe(8 + 6)
+  })
+  it('yellow-stickers: solo las 9 pegatinas amarillas + los otros 5 centros', () => {
+    expect(coloreadas('yellow-stickers')).toBe(9 + 5)
+  })
+  it('yellow-stickers: una pieza solo muestra su pegatina amarilla', () => {
+    const cs = createCubies(true)
+    const borde = cs.find((c) => c.faces.length === 2 && c.faces.some((f) => f.c === 'Y'))!
+    expect(borde.faces.map((f) => isColored('yellow-stickers', borde, f))).toEqual(borde.faces.map((f) => f.c === 'Y'))
   })
   it('first-two-layers: toda la primera y segunda capa (20 + 8) + 6 centros', () => {
     expect(coloreadas('first-two-layers')).toBe(20 + 8 + 6)

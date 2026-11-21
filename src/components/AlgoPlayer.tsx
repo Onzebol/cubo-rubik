@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { invert, parseAlg } from '../cube/cube'
 import { createCubies, turnCubies } from '../cube/cubies'
 import type { Focus } from '../cube/focus'
-import { explainedIds } from '../cube/coloring'
+import { alsoColoredIds } from '../cube/coloring'
 import { explainedPieces } from '../cube/highlight'
 import { COUNTDOWN_SECONDS, SPEEDS, gapMs, moveMs } from '../playerSpeed'
 import { useAnimator } from '../useAnimator'
@@ -37,7 +37,10 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     () => explainedPieces({ alg, setup: setupAlg, yellowUp, focus: focus ?? 'all', highlight }),
     [alg, setupAlg, yellowUp, focus, highlight],
   )
-  const alsoColored = useMemo(() => explainedIds(explained, createCubies(yellowUp)), [explained, yellowUp])
+  const alsoColored = useMemo(
+    () => alsoColoredIds(focus ?? 'all', explained, createCubies(yellowUp)),
+    [focus, explained, yellowUp],
+  )
   const [index, setIndex] = useState(0)
   /** movimiento que se está animando ahora mismo: en amarillo desde que empieza y hasta que acaba */
   const [active, setActive] = useState<number | null>(null)
