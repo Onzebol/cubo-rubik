@@ -57,3 +57,28 @@ describe('capa del medio: color solo para la primera capa, los centros y la piez
     expect(n).toBe(20 + 6 + 2)
   })
 })
+
+describe('cruz amarilla: en color las dos primeras capas, los centros y las aristas de arriba', () => {
+  it.each(['punto', 'linea', 'ele'])('%s', (id) => {
+    const { l, d } = demo('cruz-amarilla', id)
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const firma = (cs: Cubie[]) => cs.map((c) => `${c.id}:${c.faces.map((f) => (stickerColored(l.focus, extra, c, f) ? 1 : 0)).join('')}`).join(',')
+    const todos = estados(d.alg, d.setup, l.yellowUp)
+    for (const estado of todos) {
+      expect(firma(estado)).toBe(firma(todos[0])) // el color no cambia durante la animación
+      for (const c of estado) {
+        const esCentro = c.faces.length === 1
+        const dosPrimerasCapas = c.home[1] <= 0
+        const arista = (d.highlight ?? []).includes(pieceKey(c))
+        const debeIrEnColor = esCentro || dosPrimerasCapas || arista
+        expect(c.faces.every((f) => stickerColored(l.focus, extra, c, f)), `${id}: ${pieceKey(c)}`).toBe(debeIrEnColor)
+      }
+    }
+  })
+  it('en total: 28 pegatinas de las dos primeras capas + 6 centros + 8 de las aristas de arriba', () => {
+    const { l, d } = demo('cruz-amarilla', 'ele')
+    const extra = new Set(explainedIds(d.highlight ?? [], createCubies(l.yellowUp)))
+    const n = estados(d.alg, d.setup, l.yellowUp)[0].flatMap((c) => c.faces.filter((f) => stickerColored(l.focus, extra, c, f))).length
+    expect(n).toBe(28 + 6 + 8)
+  })
+})

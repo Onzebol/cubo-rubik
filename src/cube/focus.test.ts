@@ -12,7 +12,7 @@ describe('foco de los ejemplos', () => {
     expect(coloreadas('all')).toBe(54)
   })
   it('los centros siempre van en color (6)', () => {
-    for (const f of ['white-edges', 'white-layer', 'top-face', 'top-corners', 'top-layer'] as Focus[]) {
+    for (const f of ['white-edges', 'white-layer', 'top-face', 'top-corners', 'top-layer', 'first-two-layers'] as Focus[]) {
       const cs = createCubies(true)
       const centros = cs.filter((c) => c.faces.length === 1)
       expect(centros.every((c) => isColored(f, c, c.faces[0])), f).toBe(true)
@@ -26,6 +26,9 @@ describe('foco de los ejemplos', () => {
   })
   it('top-face: solo las 4 aristas y 4 esquinas de la cara de arriba (8) + 6 centros... el de arriba cuenta una vez', () => {
     expect(coloreadas('top-face')).toBe(8 + 6)
+  })
+  it('first-two-layers: toda la primera y segunda capa (20 + 8) + 6 centros', () => {
+    expect(coloreadas('first-two-layers')).toBe(20 + 8 + 6)
   })
   it('top-corners: 4 esquinas de arriba con sus 3 pegatinas + 6 centros', () => {
     expect(coloreadas('top-corners')).toBe(12 + 6)
