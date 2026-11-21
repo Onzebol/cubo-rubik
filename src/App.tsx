@@ -83,7 +83,7 @@ function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: b
       </ul>
       {lesson.tip && <p className="tip">💡 <Rich text={lesson.tip} /></p>}
       <h2>Míralo en el cubo</h2>
-      <p className="hint">Arrastra el cubo para verlo desde otro lado. Parte de la posición previa al algoritmo.</p>
+      <p className="hint">Arrastra el cubo para verlo desde otro lado. Parte de la posición previa al algoritmo. El halo marca la pieza que se explica.</p>
       {lesson.demos.map((d) => (
         <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} instructions={d.instructions} yellowUp={lesson.yellowUp} title={d.title} focus={d.focus ?? lesson.focus} highlight={d.highlight} instant={instant} />
       ))}

@@ -1,6 +1,7 @@
 // Método por capas de la guía oficial "You Can Do the Rubik's Cube — Solution Guide"
 // (Rubik's, v1-EU-M-2020). Copia en docs/Rubiks-3x3-Solve-Guide.pdf.
 // Los casos de cada paso salen de la propia guía y se comprueban en src/cases.test.ts.
+import { invert } from './cube/cube'
 import type { Focus } from './cube/focus'
 
 export interface Demo {
@@ -34,6 +35,12 @@ export interface Lesson {
 
 const SUNE = "R U R' U R U2 R'"
 const FUR = "F U R U' R' F'"
+// Capa del medio: cada ejemplo parte de las dos capas de abajo resueltas y una arista de arriba por colocar
+const LEFT_1 = "U' L' U L"
+const LEFT_2 = "U F U' F'"
+const RIGHT_1 = "U R U' R'"
+const RIGHT_2 = "U' F' U F"
+const LEFT_SETUP = invert(`${LEFT_1} ${LEFT_2}`)
 const POS_CORNERS = "R' F R' B2 R F' R' B2 R2 U'"
 
 export const LESSONS: Lesson[] = [
@@ -112,11 +119,11 @@ export const LESSONS: Lesson[] = [
       "Repite hasta completar la capa del medio.",
     ],
     demos: [
-      { title: 'Izquierda, parte 1: junto a su esquina', instructions: "La arista de arriba (sin amarillo) debe ir a la izquierda y su color frontal ya coincide con el centro frontal. U' L' U L la deja junto a su esquina.", alg: "U' L' U L" },
-      { title: 'Izquierda, parte 2: a su sitio', instructions: "Con la arista junto a su esquina, U F U' F' la mete en su sitio de la capa del medio.", alg: "U F U' F'" },
-      { title: 'Derecha, parte 1: junto a su esquina', instructions: "La arista de arriba (sin amarillo) debe ir a la derecha y su color frontal ya coincide con el centro frontal. U R U' R' la deja junto a su esquina.", alg: "U R U' R'" },
-      { title: 'Derecha, parte 2: a su sitio', instructions: "Con la arista junto a su esquina, U' F' U F la mete en su sitio de la capa del medio.", alg: "U' F' U F" },
-      { id: 'sacar', title: 'Sacar una arista mal colocada', instructions: "Hay una arista de la capa del medio mal colocada. Ponla en la cara derecha y haz U R U' R' U' F' U F: sale a la capa de arriba y podrás colocarla bien.", alg: "U R U' R' U' F' U F" },
+      { id: 'izquierda-1', title: 'Izquierda, parte 1: junto a su esquina', instructions: "La arista verde-roja está arriba, delante: su verde (frontal) coincide con el centro frontal y su rojo (arriba) es el color del centro izquierdo, así que va a la izquierda. U' L' U L la deja junto a su esquina. El halo marca esa arista.", alg: LEFT_1, setup: LEFT_SETUP, highlight: ['GR'] },
+      { id: 'izquierda-2', title: 'Izquierda, parte 2: a su sitio', instructions: "Con la arista junto a su esquina, U F U' F' la mete en su sitio de la capa del medio, a la izquierda.", alg: LEFT_2, setup: `${LEFT_SETUP} ${LEFT_1}`, highlight: ['GR'] },
+      { id: 'derecha-1', title: 'Derecha, parte 1: junto a su esquina', instructions: "La arista verde-naranja está arriba, delante: su verde (frontal) coincide con el centro frontal y su naranja (arriba) es el color del centro derecho, así que va a la derecha. U R U' R' la deja junto a su esquina. El halo marca esa arista.", alg: RIGHT_1, setup: invert(`${RIGHT_1} ${RIGHT_2}`), highlight: ['GO'] },
+      { id: 'derecha-2', title: 'Derecha, parte 2: a su sitio', instructions: "Con la arista junto a su esquina, U' F' U F la mete en su sitio de la capa del medio, a la derecha.", alg: RIGHT_2, setup: `${invert(`${RIGHT_1} ${RIGHT_2}`)} ${RIGHT_1}`, highlight: ['GO'] },
+      { id: 'sacar', title: 'Sacar una arista mal colocada', instructions: "En la capa del medio, a la derecha, hay una arista que no es la suya: es la verde-roja (sin amarillo) y le toca a la izquierda. Con ella en la cara derecha haz U R U' R' U' F' U F: sale a la capa de arriba y podrás colocarla bien. El halo marca esa arista.", alg: `${RIGHT_1} ${RIGHT_2}`, setup: `${LEFT_SETUP} ${RIGHT_1} ${RIGHT_2}`, highlight: ['GR'] },
     ],
   },
   {
