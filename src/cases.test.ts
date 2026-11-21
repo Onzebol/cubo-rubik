@@ -80,6 +80,52 @@ describe('cruz blanca (paso 2)', () => {
   })
 })
 
+describe('esquinas blancas: la situación de partida coincide con la instrucción', () => {
+  const at = (c: Cube, set: string) => {
+    const ps = new Map<string, number[]>()
+    for (const t of c) if (nz(t.p) === 3) ps.set(t.p.join(), t.p)
+    const p = [...ps.values()].find((q) => key(c, q) === set)!
+    const w = c.find((t) => t.c === 'W' && t.p.join() === p.join())!
+    return { p: p.join(','), w: w.n.join(','), y: p[1] }
+  }
+  const GRW = ['G', 'R', 'W'].sort().join('')
+  const GOW = ['G', 'O', 'W'].sort().join('')
+  const ref = solved(false)
+  const crossOk = (c: Cube) =>
+    c.filter((t) => t.c === 'W' && nz(t.p) === 2).every((t) => t.p[1] === 1 && t.n[1] === 1 && key(c, t.p) === key(ref, t.p))
+  const ejemplo = (id: string) => {
+    const [l, d] = demo('esquinas-blancas', id)
+    return states(l, d)
+  }
+
+  it('arriba mal colocada: una esquina con blanco, ajena, en el hueco de arriba-delante-derecha', () => {
+    const [a, b] = ejemplo('arriba-mal')
+    const aqui = key(a, [1, 1, 1])
+    expect(aqui).toContain('W')
+    expect(aqui).not.toBe(GRW)
+    expect(at(b, aqui).y).toBe(-1) // R' D' R la baja a la capa de abajo
+    expect(crossOk(a)).toBe(true)
+  })
+  it('blanco abajo: esquina bajo su hueco (delante a la derecha), blanco hacia abajo; el algoritmo lo pasa al frente', () => {
+    const [a, b] = ejemplo('blanco-abajo')
+    expect(at(a, GRW)).toMatchObject({ p: '1,-1,1', w: '0,-1,0' })
+    expect(at(b, GRW)).toMatchObject({ p: '1,-1,1', w: '0,0,1' })
+    expect(crossOk(a) && crossOk(b)).toBe(true)
+  })
+  it('izquierda: esquina delante a la izquierda, bajo su hueco, blanco al frente; sube con el blanco arriba', () => {
+    const [a, b] = ejemplo('izquierda')
+    expect(at(a, GOW)).toMatchObject({ p: '-1,-1,1', w: '0,0,1' })
+    expect(at(b, GOW)).toMatchObject({ p: '-1,1,1', w: '0,1,0' })
+    expect(crossOk(a) && crossOk(b)).toBe(true)
+  })
+  it('derecha: esquina delante a la derecha, bajo su hueco, blanco al frente; sube con el blanco arriba', () => {
+    const [a, b] = ejemplo('derecha')
+    expect(at(a, GRW)).toMatchObject({ p: '1,-1,1', w: '0,0,1' })
+    expect(at(b, GRW)).toMatchObject({ p: '1,1,1', w: '0,1,0' })
+    expect(crossOk(a) && crossOk(b)).toBe(true)
+  })
+})
+
 describe('esquinas blancas', () => {
   it('primera capa terminada (estático): las 9 pegatinas blancas arriba', () => {
     const [l, d] = demo('esquinas-blancas', 'final')
