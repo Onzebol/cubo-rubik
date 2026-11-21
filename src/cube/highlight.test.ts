@@ -33,7 +33,7 @@ describe('explainedPieces: la porción del cubo que se explica', () => {
     expect(pieces('margarita', 'arriba-bien')).toEqual(['GW'])
   })
   it('si el algoritmo mueve demasiadas piezas y no se indica nada, no se resalta ninguna', () => {
-    expect(pieces('orientar-esquinas', 'pez')).toEqual([])
+    expect(explainedPieces({ alg: "U R U' R' U' F' U F", yellowUp: true, focus: 'all' })).toEqual([])
   })
   it('cruz amarilla: se resaltan las 4 aristas de arriba, las que forman la cruz', () => {
     for (const id of ['linea', 'ele']) {

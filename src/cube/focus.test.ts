@@ -12,7 +12,7 @@ describe('foco de los ejemplos', () => {
     expect(coloreadas('all')).toBe(54)
   })
   it('los centros siempre van en color (6)', () => {
-    for (const f of ['white-edges', 'white-layer', 'top-face', 'top-corners', 'top-layer', 'first-two-layers', 'two-layers-yellow'] as Focus[]) {
+    for (const f of ['white-edges', 'white-layer', 'two-layers-yellow', 'two-layers-yellow-corners', 'two-layers-yellow-edges'] as Focus[]) {
       const cs = createCubies(true)
       const centros = cs.filter((c) => c.faces.length === 1)
       expect(centros.every((c) => isColored(f, c, c.faces[0])), f).toBe(true)
@@ -24,8 +24,25 @@ describe('foco de los ejemplos', () => {
   it('white-layer: 4 aristas + 4 esquinas con blanco (8 + 12) + 6 centros', () => {
     expect(coloreadas('white-layer')).toBe(8 + 12 + 6)
   })
-  it('top-face: solo las 4 aristas y 4 esquinas de la cara de arriba (8) + 6 centros... el de arriba cuenta una vez', () => {
-    expect(coloreadas('top-face')).toBe(8 + 6)
+  it('two-layers-yellow-corners: dos capas (28) + esquinas enteras (12) + amarillo de las aristas (4) + 6 centros', () => {
+    expect(coloreadas('two-layers-yellow-corners')).toBe(28 + 12 + 4 + 6)
+  })
+  it('two-layers-yellow-edges: dos capas (28) + aristas enteras (8) + amarillo de las esquinas (4) + 6 centros', () => {
+    expect(coloreadas('two-layers-yellow-edges')).toBe(28 + 8 + 4 + 6)
+  })
+  it('two-layers-yellow-corners: una esquina de arriba va entera; una arista de arriba, solo su amarillo', () => {
+    const cs = createCubies(true)
+    const esquina = cs.find((c) => c.home[1] === 1 && c.faces.length === 3)!
+    expect(esquina.faces.every((f) => isColored('two-layers-yellow-corners', esquina, f))).toBe(true)
+    const arista = cs.find((c) => c.home[1] === 1 && c.faces.length === 2)!
+    expect(arista.faces.map((f) => isColored('two-layers-yellow-corners', arista, f))).toEqual(arista.faces.map((f) => f.c === 'Y'))
+  })
+  it('two-layers-yellow-edges: una arista de arriba va entera; una esquina de arriba, solo su amarillo', () => {
+    const cs = createCubies(true)
+    const arista = cs.find((c) => c.home[1] === 1 && c.faces.length === 2)!
+    expect(arista.faces.every((f) => isColored('two-layers-yellow-edges', arista, f))).toBe(true)
+    const esquina = cs.find((c) => c.home[1] === 1 && c.faces.length === 3)!
+    expect(esquina.faces.map((f) => isColored('two-layers-yellow-edges', esquina, f))).toEqual(esquina.faces.map((f) => f.c === 'Y'))
   })
   it('two-layers-yellow: dos primeras capas (28) + pegatinas amarillas de arriba (8) + 6 centros', () => {
     expect(coloreadas('two-layers-yellow')).toBe(28 + 8 + 6)
@@ -36,15 +53,6 @@ describe('foco de los ejemplos', () => {
     expect(arriba.faces.map((f) => isColored('two-layers-yellow', arriba, f))).toEqual(arriba.faces.map((f) => f.c === 'Y'))
     const abajo = cs.find((c) => c.home[1] === -1 && c.faces.length === 2)!
     expect(abajo.faces.every((f) => isColored('two-layers-yellow', abajo, f))).toBe(true)
-  })
-  it('first-two-layers: toda la primera y segunda capa (20 + 8) + 6 centros', () => {
-    expect(coloreadas('first-two-layers')).toBe(20 + 8 + 6)
-  })
-  it('top-corners: 4 esquinas de arriba con sus 3 pegatinas + 6 centros', () => {
-    expect(coloreadas('top-corners')).toBe(12 + 6)
-  })
-  it('top-layer: toda la capa de arriba (4 aristas x2 + 4 esquinas x3 = 20) + 6 centros... el centro de arriba ya cuenta', () => {
-    expect(coloreadas('top-layer')).toBe(20 + 6)
   })
   it('el color blanco se identifica por pieza aunque haya giros (yellowUp y no)', () => {
     expect(coloreadas('white-edges', false)).toBe(14)

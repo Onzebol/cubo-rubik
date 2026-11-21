@@ -43,6 +43,8 @@ const RIGHT_2 = "U' F' U F"
 const LEFT_SETUP = invert(`${LEFT_1} ${LEFT_2}`)
 // Las 4 aristas de arriba (con amarillo): las que forman la cruz
 const CROSS_EDGES = ['BY', 'GY', 'OY', 'RY']
+// Las 4 esquinas de arriba (con amarillo)
+const CORNER_PIECES = ['BOY', 'BRY', 'GOY', 'GRY']
 const POS_CORNERS = "R' F R' B2 R F' R' B2 R2 U'"
 
 export const LESSONS: Lesson[] = [
@@ -141,35 +143,35 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'orientar-esquinas', stage: 'Última capa', title: 'Paso 2: orientar las esquinas', yellowUp: true, focus: 'top-face',
-    holding: 'Sujeta el cubo según cuántas esquinas amarillas haya arriba (la guía usa trucos de memoria).',
+    id: 'orientar-esquinas', stage: 'Última capa', title: 'Paso 2: orientar las esquinas', yellowUp: true, focus: 'two-layers-yellow',
+    holding: 'Sujeta el cubo según cuántas esquinas amarillas haya arriba (la guía usa trucos de memoria). Las dos primeras capas, en color, ya están terminadas. De la última solo importa el amarillo, así que lo demás va en gris. El resplandor marca las 4 esquinas.',
     intro: 'Consigue que todo el amarillo quede en la cara de arriba. Cuenta cuántas esquinas tienen el amarillo mirando hacia arriba.',
     points: [
       "Fíjate en que R gira en sentido contrario cada vez y U siempre horario.",
       "Si no tienes todo el amarillo arriba, vuelve a comparar y repite.",
     ],
     demos: [
-      { id: 'pez', title: 'Una esquina amarilla (pez)', instructions: "Solo hay una esquina con el amarillo hacia arriba. Ponla arriba, delante a la izquierda (el pez come de tu mano izquierda) y haz R U R' U R U2 R': las cuatro esquinas quedan amarillas.", alg: SUNE },
-      { id: 'ninguna', title: 'Ninguna esquina amarilla', instructions: "Ninguna esquina tiene el amarillo hacia arriba. Es el caso «none – left» (una pegatina amarilla en la cara izquierda). Haz R U R' U R U2 R', aparecerá un pez; ponlo delante a la izquierda con U' y repite el algoritmo.", alg: `${SUNE} U' ${SUNE}`, setup: "R U2 R' U' R U' R' U R U2 R' U' R U' R'" },
-      { id: 'dos', title: 'Dos esquinas amarillas', instructions: "Es el caso «I see two, my left thumb's on you» (el pulgar izquierdo sobre la pegatina de la cara frontal). Hay dos esquinas con el amarillo hacia arriba. Repite R U R' U R U2 R' sin girar el cubo hasta que las cuatro esquinas queden amarillas (aquí, tres veces seguidas).", alg: `${SUNE} ${SUNE} ${SUNE}`, setup: `${SUNE} ${SUNE} ${SUNE}` },
+      { id: 'pez', title: 'Una esquina amarilla (pez)', instructions: "Solo hay una esquina con el amarillo hacia arriba. Ponla arriba, delante a la izquierda (el pez come de tu mano izquierda) y haz R U R' U R U2 R': las cuatro esquinas quedan amarillas.", alg: SUNE, highlight: CORNER_PIECES },
+      { id: 'ninguna', title: 'Ninguna esquina amarilla', instructions: "Ninguna esquina tiene el amarillo hacia arriba. Es el caso «none – left» (una pegatina amarilla en la cara izquierda). Haz R U R' U R U2 R', aparecerá un pez; ponlo delante a la izquierda con U' y repite el algoritmo.", alg: `${SUNE} U' ${SUNE}`, setup: "R U2 R' U' R U' R' U R U2 R' U' R U' R'", highlight: CORNER_PIECES },
+      { id: 'dos', title: 'Dos esquinas amarillas', instructions: "Es el caso «I see two, my left thumb's on you» (el pulgar izquierdo sobre la pegatina de la cara frontal). Hay dos esquinas con el amarillo hacia arriba. Repite R U R' U R U2 R' sin girar el cubo hasta que las cuatro esquinas queden amarillas (aquí, tres veces seguidas).", alg: `${SUNE} ${SUNE} ${SUNE}`, setup: `${SUNE} ${SUNE} ${SUNE}`, highlight: CORNER_PIECES },
     ],
   },
   {
-    id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true, focus: 'top-corners',
-    holding: 'Con el amarillo arriba (U).',
+    id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true, focus: 'two-layers-yellow-corners',
+    holding: 'Con el amarillo arriba (U). Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las esquinas (importan sus colores laterales) y el amarillo; lo demás, en gris. El resplandor marca las 4 esquinas.',
     intro: 'Gira U hasta que dos esquinas estén bien colocadas (sus colores coinciden con los centros).',
     points: [
       "Si las esquinas no están bien, vuelve a comparar y repite.",
     ],
     tip: "Canto para recordar el algoritmo: «R'un to me, Fast, R'un to me, Back Back; Run away, F'ast, R'un to me, Back Back; Run Run, U'p».",
     demos: [
-      { id: 'contiguas', title: 'Dos esquinas contiguas (luces traseras)', instructions: "Hay dos esquinas contiguas bien colocadas. Sujeta el cubo con esas «luces traseras» en la cara de atrás y haz R' F R' B2 R F' R' B2 R2 U' una sola vez: las cuatro quedan bien.", alg: POS_CORNERS, setup: "F U F' U' F' L F2 U' F' U' F U F' L'" },
-      { id: 'diagonales', title: 'Dos esquinas en diagonal', instructions: "Hay dos esquinas bien colocadas, pero en diagonal. Haz R' F R' B2 R F' R' B2 R2 U' una vez desde cualquier posición, vuelve a mirar (quedarán dos contiguas), pon las luces atrás y repite.", alg: POS_CORNERS, setup: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
+      { id: 'contiguas', title: 'Dos esquinas contiguas (luces traseras)', instructions: "Hay dos esquinas contiguas bien colocadas. Sujeta el cubo con esas «luces traseras» en la cara de atrás y haz R' F R' B2 R F' R' B2 R2 U' una sola vez: las cuatro quedan bien.", alg: POS_CORNERS, setup: "F U F' U' F' L F2 U' F' U' F U F' L'", highlight: CORNER_PIECES },
+      { id: 'diagonales', title: 'Dos esquinas en diagonal', instructions: "Hay dos esquinas bien colocadas, pero en diagonal. Haz R' F R' B2 R F' R' B2 R2 U' una vez desde cualquier posición, vuelve a mirar (quedarán dos contiguas), pon las luces atrás y repite.", alg: POS_CORNERS, setup: "F R U' R' U' R U R' F' R U R' U' R' F R F'", highlight: CORNER_PIECES },
     ],
   },
   {
-    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'top-layer',
-    holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual.',
+    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'two-layers-yellow-edges',
+    holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual. Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las aristas (importan sus colores laterales) y el amarillo; lo demás, en gris. El resplandor marca las aristas que se mueven.',
     intro: 'Último paso: las aristas de arriba van a su sitio y el cubo queda resuelto.',
     points: [
       "Elige el ejemplo según el color de la arista sin resolver de la cara frontal.",
