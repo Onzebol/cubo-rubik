@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Move } from './cube/cube'
 import { turnCubies, type Cubie } from './cube/cubies'
+import { turnMs } from './playerSpeed'
 
 export interface TurnState { face: Move['face']; turns: number }
 
@@ -24,7 +25,7 @@ export function useAnimator(initial: () => Cubie[], instant = false) {
       resolve()
       return
     }
-    const duration = ms * (Math.abs(m.k) === 2 ? 1.5 : 1)
+    const duration = turnMs(ms, m.k)
     const start = performance.now()
     const tick = () => {
       if (!alive.current) return resolve()
