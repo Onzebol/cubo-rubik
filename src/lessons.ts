@@ -159,14 +159,14 @@ export const LESSONS: Lesson[] = [
   {
     id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true, focus: 'two-layers-yellow-corners',
     holding: 'Con el amarillo arriba (U). Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las esquinas (importan sus colores laterales) y el amarillo; lo demás, en gris. El resplandor marca las 4 esquinas.',
-    intro: 'Gira U hasta que dos esquinas estén bien colocadas (sus colores coinciden con los centros).',
+    intro: 'Gira U hasta que dos esquinas estén bien colocadas (sus colores coinciden con los centros). Si están en diagonal, empieza por el primer ejemplo: te lleva al segundo, el de dos esquinas contiguas.',
     points: [
       "Si las esquinas no están bien, vuelve a comparar y repite.",
     ],
     tip: "Canto para recordar el algoritmo: «R'un to me, Fast, R'un to me, Back Back; Run away, F'ast, R'un to me, Back Back; Run Run, U'p».",
     demos: [
-      { id: 'contiguas', title: 'Dos esquinas contiguas (luces traseras)', instructions: "Hay dos esquinas contiguas bien colocadas. Sujeta el cubo con esas «luces traseras» en la cara de atrás y haz R' F R' B2 R F' R' B2 R2 U' una sola vez: las cuatro quedan bien.", alg: POS_CORNERS, setup: "F U F' U' F' L F2 U' F' U' F U F' L'", highlight: CORNER_PIECES },
-      { id: 'diagonales', title: 'Dos esquinas en diagonal', instructions: "Hay dos esquinas bien colocadas, pero en diagonal. Haz R' F R' B2 R F' R' B2 R2 U' una vez desde cualquier posición, vuelve a mirar (quedarán dos contiguas), pon las luces atrás y repite.", alg: POS_CORNERS, setup: "F R U' R' U' R U R' F' R U R' U' R' F R F'", highlight: CORNER_PIECES },
+      { id: 'diagonales', title: 'Dos esquinas en diagonal', instructions: "Hay dos esquinas bien colocadas, pero en diagonal. Haz R' F R' B2 R F' R' B2 R2 U' una vez desde cualquier posición y gira U hasta que dos esquinas contiguas estén bien colocadas. Ponlas atrás (luces traseras) y pasa al ejemplo siguiente: repite el algoritmo.", alg: POS_CORNERS, setup: "F R U' R' U' R U R' F' R U R' U' R' F R F'", highlight: CORNER_PIECES },
+      { id: 'contiguas', title: 'Dos esquinas contiguas (luces traseras)', instructions: "Hay dos esquinas contiguas bien colocadas (también es lo que te queda tras resolver el caso de las diagonales). Sujeta el cubo con esas «luces traseras» en la cara de atrás y haz R' F R' B2 R F' R' B2 R2 U' una sola vez: las cuatro quedan bien.", alg: POS_CORNERS, setup: "F U F' U' F' L F2 U' F' U' F U F' L'", highlight: CORNER_PIECES },
     ],
   },
   {
