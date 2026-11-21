@@ -84,7 +84,8 @@ export function matrixFor(face: Face, turns: number): M4 {
 
 /** Matriz CSS de un cubie (posición + orientación), sin animación. */
 export function cubieMatrix(c: Cubie, size: number): M4 {
-  const x = flipY(c.cols[0]), y = flipY(c.cols[1]), z = flipY(c.cols[2])
+  // D·m·D: se invierte la y de cada columna y además la columna del eje local y
+  const x = flipY(c.cols[0]), y = flipY(c.cols[1]).map((v) => -v), z = flipY(c.cols[2])
   const t = flipY(c.p)
   return [...x, 0, ...y, 0, ...z, 0, t[0] * size, t[1] * size, t[2] * size, 1]
 }
