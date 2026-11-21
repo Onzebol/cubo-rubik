@@ -33,6 +33,7 @@ const pattern = (c: Cube) => {
   return 'otro'
 }
 const yCorners = (c: Cube) => c.filter((t) => t.c === 'Y' && nz(t.p) === 3 && t.p[1] === 1 && t.n[1] === 1).length
+const bienResuelto = (c: Cube) => c.every((t) => solved(true).some((r) => r.p.join() === t.p.join() && r.n.join() === t.n.join() && r.c === t.c))
 const SLOTS = [[1, 1, 1], [-1, 1, 1], [1, 1, -1], [-1, 1, -1]]
 const key = (c: Cube, p: number[]) => c.filter((t) => t.p.join() === p.join()).map((t) => t.c).sort().join('')
 const bienColocadas = (c: Cube, yellowUp: boolean) => SLOTS.filter((p) => key(c, p) === key(solved(yellowUp), p))
@@ -134,10 +135,45 @@ describe('esquinas blancas', () => {
   })
 })
 
-describe('capa del medio', () => {
-  it('sacar una arista mal colocada usa el algoritmo de la derecha de la guía', () => {
-    const [, d] = demo('capa-medio', 'sacar')
+describe('capa del medio: las dos capas de abajo resueltas y una arista de arriba por colocar', () => {
+  const bottomOk = (c: Cube) => {
+    const ref = solved(true)
+    return c.filter((t) => t.p[1] === -1).every((t) => ref.some((r) => r.p.join() === t.p.join() && r.n.join() === t.n.join() && r.c === t.c))
+  }
+  const sticker = (c: Cube, p: number[], n: number[]) => c.find((t) => t.p.join() === p.join() && t.n.join() === n.join())!.c
+  const ejemplo = (id: string) => {
+    const [l, d] = demo('capa-medio', id)
+    return { l, d, st: states(l, d) }
+  }
+  it('hay un solo ejemplo por caso (la receta completa), no media receta', () => {
+    expect(lesson('capa-medio').demos.map((d) => d.id)).toEqual(['izquierda', 'derecha', 'sacar'])
+  })
+  it.each([
+    ['izquierda', 'GR', 'R'], // la arista verde-roja va a la izquierda (centro izquierdo rojo)
+    ['derecha', 'GO', 'O'], // la verde-naranja va a la derecha (centro derecho naranja)
+  ])('%s: la arista %s está arriba-delante, su color frontal coincide con el centro frontal', (id, par, arriba) => {
+    const { st: [a] } = ejemplo(id)
+    expect(key(a, [0, 1, 1])).toBe(par)
+    expect(sticker(a, [0, 1, 1], [0, 0, 1])).toBe('G') // color frontal = centro frontal
+    expect(sticker(a, [0, 1, 1], [0, 1, 0])).toBe(arriba)
+    expect(bottomOk(a)).toBe(true)
+  })
+  it.each(['izquierda', 'derecha'])('%s: la receta completa resuelve el cubo', (id) => {
+    const { st: [, b] } = ejemplo(id)
+    expect(bienResuelto(b)).toBe(true)
+  })
+  it('sacar: una arista sin amarillo en el hueco equivocado de la derecha sale a la capa de arriba', () => {
+    const { d, st: [a, b] } = ejemplo('sacar')
     expect(d.alg).toBe("U R U' R' U' F' U F")
+    expect(key(a, [1, 0, 1])).toBe('GR') // sin amarillo, y no es su sitio (le toca a la izquierda)
+    expect(bottomOk(a) && bottomOk(b)).toBe(true)
+    const donde = b.find((t) => key(b, t.p) === 'GR' && t.p.filter((v) => v !== 0).length === 2)!
+    expect(donde.p[1]).toBe(1)
+  })
+  it('cada ejemplo marca la arista que se coloca', () => {
+    const l = lesson('capa-medio')
+    const marca = Object.fromEntries(l.demos.map((d) => [d.id, d.highlight]))
+    expect(marca).toEqual({ izquierda: ['GR'], derecha: ['GO'], sacar: ['GR'] })
   })
 })
 

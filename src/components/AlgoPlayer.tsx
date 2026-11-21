@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { invert, parseAlg } from '../cube/cube'
 import { createCubies, turnCubies } from '../cube/cubies'
 import type { Focus } from '../cube/focus'
+import { explainedIds } from '../cube/coloring'
 import { explainedPieces } from '../cube/highlight'
 import { useAnimator } from '../useAnimator'
 import { Cube3D } from './Cube3D'
@@ -36,6 +37,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     () => explainedPieces({ alg, setup: setupAlg, yellowUp, focus: focus ?? 'all', highlight }),
     [alg, setupAlg, yellowUp, focus, highlight],
   )
+  const alsoColored = useMemo(() => explainedIds(explained, createCubies(yellowUp)), [explained, yellowUp])
   const [index, setIndex] = useState(0)
   /** movimiento que se está animando ahora mismo: en amarillo desde que empieza y hasta que acaba */
   const [active, setActive] = useState<number | null>(null)
@@ -101,7 +103,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
       <figure className="player">
         {title && <figcaption><strong>{title}</strong></figcaption>}
         {instructions && <p className="instructions">{instructions}</p>}
-        <Cube3D cubies={anim.cubies} focus={focus} highlight={explained} />
+        <Cube3D cubies={anim.cubies} focus={focus} highlight={explained} alsoColored={alsoColored} />
       </figure>
     )
   }
@@ -110,7 +112,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
     <figure className="player">
       {title && <figcaption><strong>{title}</strong></figcaption>}
         {instructions && <p className="instructions">{instructions}</p>}
-      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} />
+      <Cube3D cubies={anim.cubies} turn={anim.turn} focus={focus} highlight={explained} alsoColored={alsoColored} />
       <ol className="moves" aria-label="Movimientos del algoritmo">
         {moves.map((m, i) => (
           <li key={i} className={i < index ? 'hecho' : ''} aria-current={i === active ? 'step' : undefined}>

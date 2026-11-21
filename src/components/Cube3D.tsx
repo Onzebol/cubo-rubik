@@ -1,7 +1,8 @@
-import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { faceOf, type Face, type Vec } from '../cube/cube'
 import { animatedMatrix, cssMatrix, type Cubie } from '../cube/cubies'
-import { isColored, type Focus } from '../cube/focus'
+import { stickerColored } from '../cube/coloring'
+import type { Focus } from '../cube/focus'
 import { pieceKey } from '../cube/highlight'
 
 export const CUBIE_SIZE = 50
@@ -26,10 +27,13 @@ interface Props {
   focus?: Focus
   /** piezas (por colores, p. ej. 'GW') que se resaltan con un halo */
   highlight?: readonly string[]
+  /** ids de piezas que van en color aunque el foco las pondría en gris (la pieza que se explica) */
+  alsoColored?: readonly number[]
 }
 
-export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [] }: Props) {
+export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [], alsoColored = [] }: Props) {
   const [view, setView] = useState({ rx: -28, ry: -38 })
+  const extra = useMemo(() => new Set(alsoColored), [alsoColored])
   const drag = useRef<{ x: number; y: number } | null>(null)
 
   const onDown = (e: PointerEvent<HTMLDivElement>) => {
@@ -72,7 +76,7 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [] 
               return (
                 <div
                   key={face}
-                  className={`sticker c-${isColored(focus, c, f) ? f.c : 'gray'}${hl ? ' hl' : ''}`}
+                  className={`sticker c-${stickerColored(focus, extra, c, f) ? f.c : 'gray'}${hl ? ' hl' : ''}`}
                   style={{ transform: `${FACE_TRANSFORM[face]} translateZ(${hl ? 2 : 0.5}px)` }}
                 >
                   {c.faces.length === 1 && <span className="label">{face}</span>}

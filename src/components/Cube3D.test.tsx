@@ -35,6 +35,13 @@ describe('Cube3D', () => {
     const { container } = render(<Cube3D cubies={createCubies(false)} />)
     expect(container.querySelectorAll('.sticker.hl')).toHaveLength(0)
   })
+  it('alsoColored: las piezas indicadas por id van en color aunque el foco las pondría en gris', () => {
+    const cs = createCubies(true)
+    const esquina = cs.find((c) => c.home[1] === 1 && c.faces.length === 3)!
+    const gris = render(<Cube3D cubies={cs} focus="white-layer" />).container.querySelectorAll('.sticker.c-gray').length
+    const menos = render(<Cube3D cubies={cs} focus="white-layer" alsoColored={[esquina.id]} />).container.querySelectorAll('.sticker.c-gray').length
+    expect(menos).toBe(gris - 3)
+  })
   it('sin foco no hay gris', () => {
     const { container } = render(<Cube3D cubies={createCubies(false)} />)
     expect(container.querySelectorAll('.sticker.c-gray')).toHaveLength(0)
