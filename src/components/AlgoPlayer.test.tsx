@@ -36,7 +36,7 @@ describe('AlgoPlayer', () => {
     expect(screen.getAllByText('0 / 1')).toHaveLength(2)
   })
   it('sin movimientos es un ejemplo estático: solo el cubo y la nota', () => {
-    render(<AlgoPlayer alg="" setup="F2" yellowUp instant title="Resultado" note="Así debe quedar" />)
+    render(<AlgoPlayer alg="" setup="F2" yellowUp instant title="Resultado" instructions="Así debe quedar" />)
     expect(screen.getByText('Resultado')).toBeInTheDocument()
     expect(screen.getByText('Así debe quedar')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Siguiente' })).not.toBeInTheDocument()
