@@ -13,6 +13,8 @@ export interface Demo {
   alg: string
   /** movimientos desde el cubo resuelto hasta la situación de partida (por defecto, el inverso de `alg`) */
   setup?: string
+  /** piezas a resaltar indicadas a mano (por colores, p. ej. 'GW'); por defecto, las que mueve el algoritmo */
+  highlight?: string[]
   focus?: Focus
 }
 export interface Lesson {
@@ -62,7 +64,7 @@ export const LESSONS: Lesson[] = [
     ],
     demos: [
       { id: 'final', title: 'Así debe quedar la margarita', instructions: "Mira cómo debe acabar este paso: las 4 aristas blancas arriba, alrededor del centro amarillo, con el blanco hacia arriba. El otro color de cada arista no importa.", alg: '', setup: "F2 R2 B2 L2" },
-      { id: 'arriba-bien', title: 'Arriba con el blanco hacia arriba: déjala', instructions: "Esta arista blanca está en la capa de arriba y su pegatina blanca mira hacia arriba: ya está bien. No la muevas y trabaja con las demás.", alg: '', setup: 'F2' },
+      { id: 'arriba-bien', title: 'Arriba con el blanco hacia arriba: déjala', instructions: "Esta arista blanca está en la capa de arriba y su pegatina blanca mira hacia arriba: ya está bien. No la muevas y trabaja con las demás.", alg: '', setup: 'F2', highlight: ['GW'] },
       { id: 'arriba-lateral', title: 'Arriba con el blanco en el lateral: voltéala', instructions: "La arista está en la capa de arriba, pero su blanco mira al lateral. Gira el cubo para que quede en la cara derecha y haz R' U F': R' la baja, U aparta lo que estorba y F' la sube con el blanco hacia arriba.", alg: "R' U F'", setup: "F' R" },
       { id: 'medio-derecha', title: 'Capa del medio, blanco en la cara derecha', instructions: "La arista está en la capa del medio, en la esquina frontal-derecha, y su blanco mira a la derecha. Gira F' y el blanco sube a la cara de arriba.", alg: "F'", setup: "F'" },
       { id: 'medio-frente', title: 'Capa del medio, blanco en la cara frontal', instructions: "La arista está en la capa del medio, en la esquina frontal-derecha, y su blanco mira al frente. Gira R y el blanco sube a la cara de arriba.", alg: 'R', setup: 'R' },

@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { faceOf, type Face, type Vec } from '../cube/cube'
 import { animatedMatrix, cssMatrix, type Cubie } from '../cube/cubies'
 import { isColored, type Focus } from '../cube/focus'
+import { pieceKey } from '../cube/highlight'
 
 export const CUBIE_SIZE = 50
 const HALF = CUBIE_SIZE / 2
@@ -23,9 +24,11 @@ interface Props {
   className?: string
   /** qué piezas van en color; el resto en gris (por defecto, todas) */
   focus?: Focus
+  /** piezas (por colores, p. ej. 'GW') que se resaltan con un halo */
+  highlight?: readonly string[]
 }
 
-export function Cube3D({ cubies, turn, className, focus = 'all' }: Props) {
+export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [] }: Props) {
   const [view, setView] = useState({ rx: -28, ry: -38 })
   const drag = useRef<{ x: number; y: number } | null>(null)
 
@@ -53,7 +56,9 @@ export function Cube3D({ cubies, turn, className, focus = 'all' }: Props) {
       aria-label="Cubo de Rubik en 3D. Arrastra para girar la vista."
     >
       <div className="scene" style={{ transform: `rotateX(${view.rx}deg) rotateY(${view.ry}deg)` }}>
-        {cubies.map((c) => (
+        {cubies.map((c) => {
+          const hl = c.faces.length > 1 && highlight.includes(pieceKey(c))
+          return (
           <div
             key={c.id}
             className="cubie"
@@ -67,15 +72,16 @@ export function Cube3D({ cubies, turn, className, focus = 'all' }: Props) {
               return (
                 <div
                   key={face}
-                  className={`sticker c-${isColored(focus, c, f) ? f.c : 'gray'}`}
-                  style={{ transform: `${FACE_TRANSFORM[face]} translateZ(0.5px)` }}
+                  className={`sticker c-${isColored(focus, c, f) ? f.c : 'gray'}${hl ? ' hl' : ''}`}
+                  style={{ transform: `${FACE_TRANSFORM[face]} translateZ(${hl ? 2 : 0.5}px)` }}
                 >
                   {c.faces.length === 1 && <span className="label">{face}</span>}
                 </div>
               )
             })}
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

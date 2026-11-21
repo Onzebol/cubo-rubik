@@ -50,6 +50,10 @@ describe('AlgoPlayer', () => {
     render(<AlgoPlayer alg="" setup="F2" yellowUp instructions="Así debe quedar." instant />)
     expect(screen.getByText('Así debe quedar.')).toBeInTheDocument()
   })
+  it('resalta la pieza que explica el ejemplo (halo)', () => {
+    const { container } = render(<AlgoPlayer alg="F2" setup="" yellowUp focus="white-edges" instant />)
+    expect(container.querySelectorAll('.sticker.hl').length).toBeGreaterThan(0)
+  })
   it('Reproducir recorre todo el algoritmo', async () => {
     const u = userEvent.setup()
     render(<AlgoPlayer alg="R U R' U'" yellowUp={false} instant />)

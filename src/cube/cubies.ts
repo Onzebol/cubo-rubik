@@ -1,5 +1,5 @@
 // Cubies (26 piezas) con posición y orientación: base del cubo 3D animado.
-import { FACES, rot, solved, type Color, type Cube, type Face, type Vec } from './cube'
+import { FACES, parseAlg, rot, solved, type Color, type Cube, type Face, type Vec } from './cube'
 
 export interface Cubie {
   id: number
@@ -38,6 +38,10 @@ export function turnCubies(cs: Cubie[], face: Face, k: number): Cubie[] {
         }
       : c,
   )
+}
+
+export function applyAlgToCubies(cs: Cubie[], alg: string): Cubie[] {
+  return parseAlg(alg).reduce((acc, m) => turnCubies(acc, m.face, m.k), cs)
 }
 
 export function stickersOf(cs: Cubie[]): Cube {

@@ -27,6 +27,14 @@ describe('Cube3D', () => {
     expect(container.querySelectorAll('.sticker.c-gray')).toHaveLength(54 - 14)
     expect(container.querySelectorAll('.sticker.c-W').length).toBeGreaterThan(0)
   })
+  it('las piezas resaltadas llevan halo en todas sus pegatinas', () => {
+    const { container } = render(<Cube3D cubies={createCubies(false)} highlight={['GW']} />)
+    expect(container.querySelectorAll('.sticker.hl')).toHaveLength(2)
+  })
+  it('sin resaltado no hay halo', () => {
+    const { container } = render(<Cube3D cubies={createCubies(false)} />)
+    expect(container.querySelectorAll('.sticker.hl')).toHaveLength(0)
+  })
   it('sin foco no hay gris', () => {
     const { container } = render(<Cube3D cubies={createCubies(false)} />)
     expect(container.querySelectorAll('.sticker.c-gray')).toHaveLength(0)
