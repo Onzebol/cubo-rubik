@@ -225,6 +225,34 @@ describe('colocar esquinas', () => {
   })
 })
 
+describe('colocar esquinas: el caso de las diagonales lleva al de las contiguas', () => {
+  const MAP: Record<string, string> = { F: 'R', R: 'B', B: 'L', L: 'F', U: 'U', D: 'D' }
+  // giro del cubo entero alrededor de y (lo que se hace al «poner las luces atrás»)
+  const yrot = (alg: string, r: number) => {
+    let a = alg
+    for (let i = 0; i < r; i++) a = a.split(' ').map((m) => MAP[m[0]] + m.slice(1)).join(' ')
+    return a
+  }
+  const aplicar = (alg: string) => { const c = solved(true); applyAlg(c, alg); return c }
+
+  it('los ejemplos van en el orden en que se usan: primero las diagonales y después las contiguas', () => {
+    expect(lesson('posicionar-esquinas').demos.map((d) => d.id)).toEqual(['diagonales', 'contiguas'])
+  })
+  it('diagonales: una pasada y un giro de U dejan dos contiguas bien colocadas; con ellas atrás, otra pasada resuelve', () => {
+    const [l, d] = demo('posicionar-esquinas', 'diagonales')
+    const base = `${d.setup} ${d.alg}`
+    const contiguas = ['', 'U', 'U2', "U'"].filter((u) => {
+      const bien = bienColocadas(aplicar(`${base} ${u}`), l.yellowUp)
+      return bien.length === 2 && (bien[0][0] === bien[1][0] || bien[0][2] === bien[1][2])
+    })
+    expect(contiguas.length).toBeGreaterThan(0)
+    const resuelve = contiguas.some((u) =>
+      [0, 1, 2, 3].some((r) => ['', 'U', 'U2', "U'"].some((v) => bienColocadas(aplicar(`${base} ${u} ${yrot(d.alg, r)} ${v}`), l.yellowUp).length === 4)),
+    )
+    expect(resuelve).toBe(true)
+  })
+})
+
 describe('todas las demos', () => {
   it('los setups son válidos y los ids son únicos por lección', () => {
     for (const l of LESSONS) {

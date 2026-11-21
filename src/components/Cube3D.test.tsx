@@ -43,8 +43,8 @@ describe('Cube3D', () => {
     expect(menos).toBe(gris - 3)
   })
   it('el halo solo se pinta en las pegatinas con color, nunca en las grises', () => {
-    // arista GY de arriba: con el foco top-face solo su pegatina amarilla (la de arriba) va en color
-    const { container } = render(<Cube3D cubies={createCubies(true)} focus="top-face" highlight={['GY']} />)
+    // arista GY de arriba: con el foco two-layers-yellow solo su pegatina amarilla (la de arriba) va en color
+    const { container } = render(<Cube3D cubies={createCubies(true)} focus="two-layers-yellow" highlight={['GY']} />)
     expect(container.querySelectorAll('.sticker.c-gray.hl')).toHaveLength(0)
     expect(container.querySelectorAll('.sticker.hl')).toHaveLength(1)
     expect(container.querySelector('.sticker.hl')).toHaveClass('c-Y')
