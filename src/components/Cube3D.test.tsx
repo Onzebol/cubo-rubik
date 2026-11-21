@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { createCubies, turnCubies } from '../cube/cubies'
 import { Cube3D } from './Cube3D'
 
@@ -41,6 +41,37 @@ describe('Cube3D', () => {
     const gris = render(<Cube3D cubies={cs} focus="white-layer" />).container.querySelectorAll('.sticker.c-gray').length
     const menos = render(<Cube3D cubies={cs} focus="white-layer" alsoColored={[esquina.id]} />).container.querySelectorAll('.sticker.c-gray').length
     expect(menos).toBe(gris - 3)
+  })
+  it('el halo solo se pinta en las pegatinas con color, nunca en las grises', () => {
+    // arista GY de arriba: con el foco top-face solo su pegatina amarilla (la de arriba) va en color
+    const { container } = render(<Cube3D cubies={createCubies(true)} focus="top-face" highlight={['GY']} />)
+    expect(container.querySelectorAll('.sticker.c-gray.hl')).toHaveLength(0)
+    expect(container.querySelectorAll('.sticker.hl')).toHaveLength(1)
+    expect(container.querySelector('.sticker.hl')).toHaveClass('c-Y')
+  })
+  describe('botón para restablecer la vista', () => {
+    const escena = (c: HTMLElement) => c.querySelector<HTMLElement>('.scene')!.style.transform
+    const arrastrar = (c: HTMLElement) => {
+      const el = c.querySelector('.cube3d')!
+      fireEvent.pointerDown(el, { clientX: 100, clientY: 100, pointerId: 1 })
+      fireEvent.pointerMove(el, { clientX: 160, clientY: 130, pointerId: 1 })
+      fireEvent.pointerUp(el, { pointerId: 1 })
+    }
+    it('empieza desactivado porque la vista es la de por defecto', () => {
+      render(<Cube3D cubies={createCubies(false)} />)
+      expect(screen.getByRole('button', { name: 'Restablecer la vista del cubo' })).toBeDisabled()
+    })
+    it('tras arrastrar el cubo se activa y devuelve la vista por defecto', () => {
+      const { container } = render(<Cube3D cubies={createCubies(false)} />)
+      const inicial = escena(container)
+      arrastrar(container)
+      expect(escena(container)).not.toBe(inicial)
+      const boton = screen.getByRole('button', { name: 'Restablecer la vista del cubo' })
+      expect(boton).toBeEnabled()
+      fireEvent.click(boton)
+      expect(escena(container)).toBe(inicial)
+      expect(boton).toBeDisabled()
+    })
   })
   it('sin foco no hay gris', () => {
     const { container } = render(<Cube3D cubies={createCubies(false)} />)

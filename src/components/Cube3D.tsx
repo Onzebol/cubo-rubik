@@ -31,8 +31,11 @@ interface Props {
   alsoColored?: readonly number[]
 }
 
+const DEFAULT_VIEW = { rx: -28, ry: -38 }
+
 export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [], alsoColored = [] }: Props) {
-  const [view, setView] = useState({ rx: -28, ry: -38 })
+  const [view, setView] = useState(DEFAULT_VIEW)
+  const enVistaPorDefecto = view.rx === DEFAULT_VIEW.rx && view.ry === DEFAULT_VIEW.ry
   const extra = useMemo(() => new Set(alsoColored), [alsoColored])
   const drag = useRef<{ x: number; y: number } | null>(null)
 
@@ -50,6 +53,7 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
   const onUp = () => { drag.current = null }
 
   return (
+    <div className="cube-wrap">
     <div
       className={`cube3d ${className ?? ''}`}
       onPointerDown={onDown}
@@ -61,7 +65,7 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
     >
       <div className="scene" style={{ transform: `rotateX(${view.rx}deg) rotateY(${view.ry}deg)` }}>
         {cubies.map((c) => {
-          const hl = c.faces.length > 1 && highlight.includes(pieceKey(c))
+          const resaltada = c.faces.length > 1 && highlight.includes(pieceKey(c))
           return (
           <div
             key={c.id}
@@ -73,10 +77,12 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
             ))}
             {c.faces.map((f) => {
               const face = faceOf({ p: c.p, n: f.n as Vec, c: f.c })
+              const conColor = stickerColored(focus, extra, c, f)
+              const hl = resaltada && conColor // el halo nunca va en una cara gris
               return (
                 <div
                   key={face}
-                  className={`sticker c-${stickerColored(focus, extra, c, f) ? f.c : 'gray'}${hl ? ' hl' : ''}`}
+                  className={`sticker c-${conColor ? f.c : 'gray'}${hl ? ' hl' : ''}`}
                   style={{ transform: `${FACE_TRANSFORM[face]} translateZ(${hl ? 2 : 0.5}px)` }}
                 >
                   {c.faces.length === 1 && <span className="label">{face}</span>}
@@ -87,6 +93,17 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
           )
         })}
       </div>
+    </div>
+    <button
+      type="button"
+      className="view-reset"
+      onClick={() => setView(DEFAULT_VIEW)}
+      disabled={enVistaPorDefecto}
+      aria-label="Restablecer la vista del cubo"
+      title="Restablecer la vista"
+    >
+      ⟲
+    </button>
     </div>
   )
 }
