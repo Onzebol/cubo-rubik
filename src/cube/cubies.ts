@@ -4,6 +4,8 @@ import { FACES, rot, solved, type Color, type Cube, type Face, type Vec } from '
 export interface Cubie {
   id: number
   p: Vec
+  /** posición de origen (identidad de la pieza) */
+  home: Vec
   /** cols[i] = imagen del eje local i tras los giros acumulados */
   cols: [Vec, Vec, Vec]
   /** pegatinas en coordenadas locales (normal de origen y color) */
@@ -17,7 +19,7 @@ export function createCubies(yellowUp: boolean): Cubie[] {
     const k = t.p.join(',')
     let c = byPos.get(k)
     if (!c) {
-      c = { id: id++, p: [...t.p] as Vec, cols: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], faces: [] }
+      c = { id: id++, p: [...t.p] as Vec, home: [...t.p] as Vec, cols: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], faces: [] }
       byPos.set(k, c)
     }
     c.faces.push({ n: [...t.n] as Vec, c: t.c })
