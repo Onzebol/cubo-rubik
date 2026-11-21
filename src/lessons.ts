@@ -127,15 +127,15 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'cruz-amarilla', stage: 'Última capa', title: 'Paso 1: la cruz amarilla', yellowUp: true, focus: 'first-two-layers',
-    holding: 'Fíjate solo en las aristas amarillas de la cara de arriba (no en las esquinas). Las dos primeras capas, en color, ya están terminadas. El resplandor marca las aristas de arriba que se explican.',
+    id: 'cruz-amarilla', stage: 'Última capa', title: 'Paso 1: la cruz amarilla', yellowUp: true, focus: 'two-layers-yellow',
+    holding: 'Fíjate solo en las aristas amarillas de la cara de arriba (no en las esquinas). Las dos primeras capas, en color, ya están terminadas. De la última capa solo importa el amarillo, así que el resto de sus colores va en gris. El resplandor marca las aristas de arriba que se explican.',
     intro: 'Mira qué dibujo forman las aristas amarillas: un **punto**, una **«L»** o una **línea**. El mismo algoritmo las lleva de un caso al siguiente hasta formar la cruz: punto → línea → «L» → cruz.',
     points: [
       "Si aún no hay cruz, vuelve a comparar con estos tres casos y repite. Puede hacer falta 3 veces.",
     ],
     tip: "Regla para recordarlo: «FUR dice U'R'F'». Los tres primeros giros van a derechas y los otros tres al revés.",
     demos: [
-      { id: 'punto', title: 'Punto', instructions: "Solo se ve el centro amarillo arriba. Aplica F U R U' R' F': saldrá una línea, en vertical (gira el cubo para ponerla en horizontal). Las dos primeras capas, ya terminadas, siguen en color; de la última capa solo importa el amarillo, así que solo se pintan sus pegatinas amarillas. El resplandor marca las dos aristas que acabarán arriba.", alg: FUR, setup: "F R U R' U' F' U2 F U R U' R' F'", focus: 'two-layers-yellow', highlight: ['BY', 'RY'] },
+      { id: 'punto', title: 'Punto', instructions: "Solo se ve el centro amarillo arriba. Aplica F U R U' R' F': saldrá una línea, en vertical (gira el cubo para ponerla en horizontal). El resplandor marca las dos aristas que acabarán arriba.", alg: FUR, setup: "F R U R' U' F' U2 F U R U' R' F'", highlight: ['BY', 'RY'] },
       { id: 'linea', title: 'Línea horizontal', instructions: "Hay dos aristas amarillas en línea. Colócala en horizontal (de izquierda a derecha) y aplica F U R U' R' F': saldrá una «L».", alg: FUR, setup: FUR, highlight: CROSS_EDGES },
       { id: 'ele', title: '«L» hacia atrás y la izquierda', instructions: "Hay dos aristas amarillas en «L». Colócalas hacia atrás y hacia la izquierda y aplica F U R U' R' F': saldrá la cruz.", alg: FUR, highlight: CROSS_EDGES },
     ],
