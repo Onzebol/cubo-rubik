@@ -1,4 +1,4 @@
-import { createCubies } from './cubies'
+import { createCubies, turnCubies } from './cubies'
 import { isColored, type Focus } from './focus'
 
 // número de pegatinas coloreadas según el foco, con el cubo resuelto
@@ -6,6 +6,18 @@ const coloreadas = (focus: Focus, yellowUp = true) => {
   const cs = createCubies(yellowUp)
   return cs.flatMap((c) => c.faces.filter((f) => isColored(focus, c, f))).length
 }
+
+describe('two-layers: lo que está en las dos capas de abajo nunca va en gris', () => {
+  it('una esquina de arriba que baja a la primera capa se pinta en color', () => {
+    const cs = createCubies(true)
+    const esquinaArriba = (c: (typeof cs)[number]) => c.home[1] === 1 && c.faces.length === 3
+    expect(cs.filter(esquinaArriba).every((c) => c.faces.every((f) => !isColored('two-layers', c, f)))).toBe(true)
+    const girado = turnCubies(cs, 'R', 1)
+    const baja = girado.filter((c) => esquinaArriba(c) && c.p[1] === -1)
+    expect(baja.length).toBeGreaterThan(0)
+    for (const c of baja) expect(c.faces.every((f) => isColored('two-layers', c, f))).toBe(true)
+  })
+})
 
 describe('foco de los ejemplos', () => {
   it('all colorea las 54 pegatinas', () => {

@@ -1,4 +1,6 @@
 import { applyAlg, invert, solved, type Cube } from './cube/cube'
+import { createCubies, applyAlgToCubies } from './cube/cubies'
+import { isColored } from './cube/focus'
 import { LESSONS, type Demo, type Lesson } from './lessons'
 
 const nz = (p: number[]) => p.filter((v) => v !== 0).length
@@ -143,11 +145,14 @@ describe('capa del medio: las dos capas de abajo resueltas y una arista de arrib
   const sticker = (c: Cube, p: number[], n: number[]) => c.find((t) => t.p.join() === p.join() && t.n.join() === n.join())!.c
   const ejemplo = (id: string) => {
     const [l, d] = demo('capa-medio', id)
-    return { d, st: states(l, d) }
+    return { l, d, st: states(l, d) }
   }
+  it('hay un solo ejemplo por caso (la receta completa), no media receta', () => {
+    expect(lesson('capa-medio').demos.map((d) => d.id)).toEqual(['izquierda', 'derecha', 'sacar'])
+  })
   it.each([
-    ['izquierda-1', 'GR', 'R'], // la arista verde-roja va a la izquierda (centro izquierdo rojo)
-    ['derecha-1', 'GO', 'O'], // la verde-naranja va a la derecha (centro derecho naranja)
+    ['izquierda', 'GR', 'R'], // la arista verde-roja va a la izquierda (centro izquierdo rojo)
+    ['derecha', 'GO', 'O'], // la verde-naranja va a la derecha (centro derecho naranja)
   ])('%s: la arista %s está arriba-delante, su color frontal coincide con el centro frontal', (id, par, arriba) => {
     const { st: [a] } = ejemplo(id)
     expect(key(a, [0, 1, 1])).toBe(par)
@@ -155,14 +160,9 @@ describe('capa del medio: las dos capas de abajo resueltas y una arista de arrib
     expect(sticker(a, [0, 1, 1], [0, 1, 0])).toBe(arriba)
     expect(bottomOk(a)).toBe(true)
   })
-  it.each([['izquierda'], ['derecha']])('%s: la parte 2 empieza donde acaba la parte 1 y el conjunto resuelve el cubo', (lado) => {
-    const l = lesson('capa-medio')
-    const d1 = l.demos.find((x) => x.id === `${lado}-1`)!
-    const d2 = l.demos.find((x) => x.id === `${lado}-2`)!
-    expect(d2.setup).toBe(`${d1.setup} ${d1.alg}`)
-    const c = solved(true)
-    applyAlg(c, `${d2.setup} ${d2.alg}`)
-    expect(bienResuelto(c)).toBe(true)
+  it.each(['izquierda', 'derecha'])('%s: la receta completa resuelve el cubo', (id) => {
+    const { st: [, b] } = ejemplo(id)
+    expect(bienResuelto(b)).toBe(true)
   })
   it('sacar: una arista sin amarillo en el hueco equivocado de la derecha sale a la capa de arriba', () => {
     const { d, st: [a, b] } = ejemplo('sacar')
@@ -172,12 +172,23 @@ describe('capa del medio: las dos capas de abajo resueltas y una arista de arrib
     const donde = b.find((t) => key(b, t.p) === 'GR' && t.p.filter((v) => v !== 0).length === 2)!
     expect(donde.p[1]).toBe(1)
   })
+  it('la primera capa y la del medio nunca tienen cubos grises, ni al empezar ni al acabar', () => {
+    for (const id of ['izquierda', 'derecha', 'sacar']) {
+      const { l, d } = ejemplo(id)
+      const ini = applyAlgToCubies(createCubies(l.yellowUp), d.setup ?? invert(d.alg))
+      const fin = applyAlgToCubies(ini, d.alg)
+      for (const estado of [ini, fin]) {
+        for (const c of estado) {
+          if (c.p[1] > 0) continue
+          for (const f of c.faces) expect(isColored(d.focus ?? l.focus, c, f), `${id}: pieza en ${c.p}`).toBe(true)
+        }
+      }
+    }
+  })
   it('cada ejemplo marca la arista que se coloca', () => {
     const l = lesson('capa-medio')
     const marca = Object.fromEntries(l.demos.map((d) => [d.id, d.highlight]))
-    expect(marca).toEqual({
-      'izquierda-1': ['GR'], 'izquierda-2': ['GR'], 'derecha-1': ['GO'], 'derecha-2': ['GO'], sacar: ['GR'],
-    })
+    expect(marca).toEqual({ izquierda: ['GR'], derecha: ['GO'], sacar: ['GR'] })
   })
 })
 
