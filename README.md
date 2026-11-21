@@ -12,3 +12,11 @@ npm run build   # producción
 ```
 
 Flujo: toda mejora parte de una issue y entra por PR (`Closes #n`).
+
+## PWA (instalable y sin conexión)
+
+- `public/manifest.webmanifest` + iconos (`public/icon*.png`, `apple-touch-icon.png`, `icon.svg`): la app se puede instalar en el móvil.
+- `pwa/sw.template.js` es el service worker; `pwa/swPlugin.ts` lo genera en cada build como `dist/sw.js`, con la lista de archivos y una versión derivada de ellos.
+- Al desplegar una versión nueva, la app lo detecta y muestra un aviso con el botón **Actualizar**; no se actualiza sola a mitad de uso.
+- Regenerar el icono: `node pwa/icon.mjs` dibuja `public/icon.svg`; los PNG se sacan de ese SVG (512, 192, 180 y maskable 512).
+

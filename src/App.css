@@ -81,3 +81,7 @@ button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible
 .c-B { background: #0046ad; } .c-R { background: #b71234; } .c-O { background: #ff5800; }
 @media (min-width: 480px) { .cube3d { height: 340px; } .pad { grid-template-columns: repeat(3, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }
+
+/* ---- Aviso de versión nueva (PWA) ---- */
+.update-banner { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 696px; margin: 0 auto; padding: 10px 12px 10px 16px; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5); }
+.update-banner span { font-weight: 600; }

@@ -5,6 +5,7 @@ import { Cube3D } from './components/Cube3D'
 import { isSolved, parseAlg, type Face } from './cube/cube'
 import { createCubies, stickersOf } from './cube/cubies'
 import { LESSONS, SOURCES, type Lesson } from './lessons'
+import { UpdateBanner } from './pwa/UpdateBanner'
 import { useAnimator } from './useAnimator'
 
 const PROGRESS_KEY = 'cubo-progreso'
@@ -188,6 +189,7 @@ export default function App({ instant = reducedMotion() }: { instant?: boolean }
         </nav>
       </header>
       <main>{page}</main>
+      <UpdateBanner />
     </>
   )
 }
