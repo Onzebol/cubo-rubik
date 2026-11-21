@@ -155,7 +155,6 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
         <button type="button" className="primary" onClick={play} disabled={counting} aria-label={playing ? 'Pausar' : 'Reproducir'}>
           {playing ? '⏸' : '▶'}
         </button>
-        <button type="button" onClick={forward} disabled={done || playing || counting} aria-label="Siguiente">▶|</button>
         <button
           type="button"
           className="countdown-btn"
@@ -165,6 +164,7 @@ export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, instructions
         >
           {counting ? '✕' : `▶ ${COUNTDOWN_SECONDS} s`}
         </button>
+        <button type="button" onClick={forward} disabled={done || playing || counting} aria-label="Siguiente">▶|</button>
         <label className="speed">
           <span className="sr-only">Velocidad</span>
           <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>

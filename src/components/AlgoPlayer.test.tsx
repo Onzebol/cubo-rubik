@@ -100,6 +100,12 @@ describe('AlgoPlayer', () => {
     expect([...selector.querySelectorAll('option')].map((o) => o.textContent)).toEqual(['1×', '2×'])
     expect(selector).toHaveValue('1')
   })
+  it('el botón de cuenta atrás está justo al lado del play normal', () => {
+    render(<AlgoPlayer alg="R U" yellowUp={false} instant />)
+    const play = screen.getByRole('button', { name: 'Reproducir' })
+    const cuentaAtras = screen.getByRole('button', { name: 'Reproducir con cuenta atrás' })
+    expect(play.nextElementSibling).toBe(cuentaAtras)
+  })
   describe('botón de play con cuenta atrás', () => {
     beforeEach(() => { vi.useFakeTimers() })
     afterEach(() => { vi.useRealTimers() })
