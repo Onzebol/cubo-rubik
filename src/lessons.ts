@@ -170,8 +170,8 @@ export const LESSONS: Lesson[] = [
     ],
   },
   {
-    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'two-layers-yellow-edges',
-    holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual. Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las aristas (importan sus colores laterales) y el amarillo; lo demás, en gris. El resplandor marca las aristas que se mueven.',
+    id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'all',
+    holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual. Las dos primeras capas y las cuatro esquinas ya están bien, así que todo va en color. El resplandor marca las aristas que se mueven.',
     intro: 'Último paso: las aristas de arriba van a su sitio y el cubo queda resuelto.',
     points: [
       "Elige el ejemplo según el color de la arista sin resolver de la cara frontal.",

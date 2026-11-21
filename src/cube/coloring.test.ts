@@ -64,8 +64,8 @@ const PASOS_ULTIMA_CAPA: { id: string; focus: string; enteras: (c: Cubie) => boo
   { id: 'orientar-esquinas', focus: 'two-layers-yellow', enteras: () => false, total: 28 + 8 + 6 },
   // esquinas enteras (12) + amarillo de las aristas (4)
   { id: 'posicionar-esquinas', focus: 'two-layers-yellow-corners', enteras: (c: Cubie) => c.home[1] === 1 && c.faces.length === 3, total: 28 + 12 + 4 + 6 },
-  // aristas enteras (8) + amarillo de las esquinas (4)
-  { id: 'posicionar-aristas', focus: 'two-layers-yellow-edges', enteras: (c: Cubie) => c.home[1] === 1 && c.faces.length === 2, total: 28 + 8 + 4 + 6 },
+  // las cuatro esquinas ya están bien colocadas: van en color, igual que las aristas; todo el cubo
+  { id: 'posicionar-aristas', focus: 'all', enteras: (c: Cubie) => c.home[1] === 1, total: 54 },
 ]
 const RESALTADAS: Record<string, string[] | undefined> = {
   'orientar-esquinas': ['BOY', 'BRY', 'GOY', 'GRY'],
