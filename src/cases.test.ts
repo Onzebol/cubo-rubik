@@ -281,6 +281,25 @@ describe('primera capa: lo que se ve en cada ejemplo coincide con lo que dice el
       expect(donde(fin, 'GW')).toBe('0,1,1 blanco→arriba')
       expect(halo('margarita', 'arriba-lateral')).toEqual(['GW'])
     })
+    it("arriba con el blanco en el lateral: la capa de arriba va en gris, así que la U no se vería y no se anima (R' F')", () => {
+      const [l, d] = demo('margarita', 'arriba-lateral')
+      expect(d.alg).toBe("R' F'")
+      expect(d.alg.split(' ').some((m) => m.startsWith('U'))).toBe(false)
+      // el resultado para la arista que se explica es el mismo que con la U de la guía
+      const ini = applyAlgToCubies(createCubies(l.yellowUp), d.setup!)
+      expect(donde(applyAlgToCubies(ini, d.alg), 'GW')).toBe(donde(applyAlgToCubies(ini, "R' U F'"), 'GW'))
+      // y el texto sigue mencionando la receta de la guía
+      expect(d.instructions).toContain("R' U F'")
+    })
+    it("la U de la guía (R' U F') solo hace falta si ya hay un pétalo justo delante: lo aparta para que F' no lo tire", () => {
+      const ini = applyAlgToCubies(createCubies(true), "D2 F2 B R'") // GW arriba-derecha con el blanco a la derecha y el pétalo BW delante
+      expect(donde(ini, 'GW')).toBe('1,1,0 blanco→derecha')
+      expect(donde(ini, 'BW')).toBe('0,1,1 blanco→arriba')
+      const petales = (cs: Cubie[]) =>
+        cs.filter((c) => c.faces.length === 2 && c.faces.some((f) => f.c === 'W') && c.p[1] === 1 && donde([c], pieceKey(c)).endsWith('arriba')).map(pieceKey).sort()
+      expect(petales(applyAlgToCubies(ini, "R' U F'"))).toEqual(['BW', 'GW']) // con la U se conservan los dos
+      expect(petales(applyAlgToCubies(ini, "R' F'"))).not.toContain('BW') // sin la U se pierde el de delante
+    })
     it('capa del medio, blanco a la derecha: en la esquina frontal-derecha; sube con el blanco arriba', () => {
       const { ini, fin } = estados('margarita', 'medio-derecha')
       expect(donde(ini, 'GW')).toBe('1,0,1 blanco→derecha')
