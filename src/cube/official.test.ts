@@ -18,7 +18,7 @@ const aristas = (ts: Cube) => ts.filter((t) => t.p.filter((v) => v !== 0).length
 describe('lecciones de la guía oficial', () => {
   it('todos los algoritmos de las demos son válidos y se deshacen con su inverso', () => {
     for (const l of LESSONS) for (const d of l.demos) {
-      expect(parseAlg(d.alg).length).toBeGreaterThan(0)
+      expect(parseAlg(d.alg).length > 0 || d.setup !== undefined).toBe(true)
       const c = solved(l.yellowUp)
       applyAlg(c, d.alg)
       applyAlg(c, invert(d.alg))

@@ -7,6 +7,8 @@ import { Cube3D } from './Cube3D'
 
 interface Props {
   alg: string
+  /** movimientos desde el cubo resuelto hasta la situación de partida (por defecto, el inverso de `alg`) */
+  setup?: string
   yellowUp: boolean
   title?: string
   note?: string
@@ -18,11 +20,11 @@ const BASE_MS = 420
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 /** Cubo 3D que se prepara con el inverso del algoritmo y lo reproduce paso a paso, animado. */
-export function AlgoPlayer({ alg, yellowUp, title, note, focus, instant = false }: Props) {
+export function AlgoPlayer({ alg, setup: setupAlg, yellowUp, title, note, focus, instant = false }: Props) {
   const moves = useMemo(() => parseAlg(alg), [alg])
   const setup = () => {
     let cs = createCubies(yellowUp)
-    for (const m of parseAlg(invert(alg))) cs = turnCubies(cs, m.face, m.k)
+    for (const m of parseAlg(setupAlg ?? invert(alg))) cs = turnCubies(cs, m.face, m.k)
     return cs
   }
   const anim = useAnimator(setup, instant)
@@ -78,6 +80,16 @@ export function AlgoPlayer({ alg, yellowUp, title, note, focus, instant = false 
   }
 
   const done = index === moves.length
+
+  if (moves.length === 0) {
+    return (
+      <figure className="player">
+        {title && <figcaption><strong>{title}</strong></figcaption>}
+        <Cube3D cubies={anim.cubies} focus={focus} />
+        {note && <p className="note">{note}</p>}
+      </figure>
+    )
+  }
 
   return (
     <figure className="player">
