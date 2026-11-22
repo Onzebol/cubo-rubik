@@ -1,6 +1,8 @@
 // Método por capas de la guía oficial "You Can Do the Rubik's Cube — Solution Guide"
 // (Rubik's, v1-EU-M-2020). Copia en docs/Rubiks-3x3-Solve-Guide.pdf.
 // Los casos de cada paso salen de la propia guía y se comprueban en src/cases.test.ts.
+// Variante para comparar: los pasos 2, 3 y 4 de la última capa según Kubekings
+// (https://kubekings.com/blog/post/como-hacer-el-cubo-de-rubik), marcados con `variant`.
 import { invert } from './cube/cube'
 import type { Focus } from './cube/focus'
 
@@ -20,7 +22,7 @@ export interface Demo {
 }
 export interface Lesson {
   id: string
-  stage: 'Antes de empezar' | 'Primera capa' | 'Capa del medio' | 'Última capa'
+  stage: 'Antes de empezar' | 'Primera capa' | 'Capa del medio' | 'Última capa' | 'Última capa: variante Kubekings'
   title: string
   holding: string
   intro: string
@@ -31,6 +33,10 @@ export interface Lesson {
   /** piezas en color en los ejemplos; el resto, gris (como en la guía oficial) */
   focus: Focus
   demos: Demo[]
+  /** lección de la variante Kubekings: va por su propio camino (cruz amarilla, y después sus 3 pasos) */
+  variant?: 'kubekings'
+  /** aviso con un enlace al otro camino de la última capa */
+  altRoute?: { text: string; label: string; id: string }
 }
 
 const SUNE = "R U R' U R U2 R'"
@@ -46,6 +52,13 @@ const CROSS_EDGES = ['BY', 'GY', 'OY', 'RY']
 // Las 4 esquinas de arriba (con amarillo)
 const CORNER_PIECES = ['BOY', 'BRY', 'GOY', 'GRY']
 const POS_CORNERS = "R' F R' B2 R F' R' B2 R2 U'"
+// Variante Kubekings
+const KK_EDGES = `U ${SUNE}`
+const KK_CORNERS = "U R U' L' U R' U' L"
+const KK_TWIST = "R' D' R D"
+const twice = (a: string, n: number) => Array(n).fill(a).join(' ')
+// ejemplo completo de orientar esquinas: una esquina con el amarillo a la derecha (2 veces) y otra al frente (4 veces)
+const KK_FULL = `${twice(KK_TWIST, 2)} U ${twice(KK_TWIST, 4)} U U U`
 
 export const LESSONS: Lesson[] = [
   {
@@ -136,6 +149,10 @@ export const LESSONS: Lesson[] = [
       "Si aún no hay cruz, vuelve a comparar con estos tres casos y repite. Puede hacer falta 3 veces.",
     ],
     tip: "Regla para recordarlo: «FUR dice U'R'F'». Los tres primeros giros van a derechas y los otros tres al revés.",
+    altRoute: {
+      text: 'Después de la cruz hay dos caminos para acabar la última capa: el de la guía oficial (siguiente lección) o la variante de Kubekings, que usa otro orden y otros algoritmos. Pruébalos y quédate con el que te salga mejor.',
+      label: 'Probar la variante Kubekings →', id: 'kk-aristas',
+    },
     demos: [
       { id: 'punto', title: 'Punto', instructions: "Solo se ve el centro amarillo arriba. Aplica F U R U' R' F': saldrá una línea, en vertical (gira el cubo para ponerla en horizontal). El resplandor marca las dos aristas que acabarán arriba.", alg: FUR, setup: "F R U R' U' F' U2 F U R U' R' F'", highlight: ['BY', 'RY'] },
       { id: 'linea', title: 'Línea horizontal', instructions: "Hay dos aristas amarillas en línea. Colócala en horizontal (de izquierda a derecha) y aplica F U R U' R' F': saldrá una «L».", alg: FUR, setup: FUR, highlight: CROSS_EDGES },
@@ -182,11 +199,63 @@ export const LESSONS: Lesson[] = [
       { title: 'Aristas hacia la derecha', instructions: "La arista sin resolver de la cara frontal es del color del centro derecho. Con una cara resuelta detrás, haz F2 U' L R' F2 L' R U' F2 (las dos U pasan a U'): las aristas se mueven hacia la derecha.", alg: "F2 U' L R' F2 L' R U' F2" },
     ],
   },
+  {
+    id: 'kk-aristas', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 2: ordenar las aristas de la cruz', yellowUp: true, focus: 'two-layers-edges',
+    holding: 'Con el amarillo arriba (U). Pon las dos aristas bien colocadas al fondo (atrás) y a la izquierda. Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las aristas (importan sus colores laterales); de las esquinas solo importa el amarillo. El resplandor marca las dos aristas que se intercambian.',
+    intro: 'Ya tienes la cruz amarilla, pero los colores laterales de sus aristas pueden no coincidir con los centros. Ahora los ordenas: cada arista debe tener el mismo color que el centro de su cara. Las esquinas todavía no importan. Gira U hasta que al menos dos aristas estén bien: siempre se consigue, y solo hay dos casos: **contiguas** u **opuestas**.',
+    points: [
+      "Si las cuatro aristas ya están bien, pasa al paso siguiente.",
+      "Las esquinas se mueven y se giran: es normal, se arreglan en los pasos siguientes.",
+      "Este paso solo vale en este orden (aristas, esquinas y orientar): sus algoritmos giran esquinas y desharían el paso «Orientar las esquinas» de la guía oficial.",
+    ],
+    altRoute: { text: 'Estás en la variante de Kubekings. El otro camino acaba la última capa con la guía oficial.', label: 'Volver al método de la guía oficial →', id: 'orientar-esquinas' },
+    demos: [
+      { id: 'contiguas', title: 'Dos aristas contiguas bien (atrás e izquierda)', instructions: `Hay dos aristas contiguas bien colocadas. Ponlas atrás y a la izquierda, gira la capa U si hace falta y haz ${KK_EDGES}: las cuatro aristas quedan bien.`, alg: KK_EDGES, highlight: ['OY', 'GY'] },
+      { id: 'opuestas', title: 'Dos aristas opuestas bien', instructions: `Hay dos aristas bien colocadas, pero una frente a la otra (aquí, la de atrás y la de delante). Haz ${KK_EDGES} una vez: sale el caso anterior, con dos aristas contiguas bien. Gira U hasta ponerlas atrás y a la izquierda y repite el algoritmo.`, alg: KK_EDGES, setup: `U2 ${SUNE} U2 U ${SUNE}`, highlight: ['GY', 'RY'] },
+    ],
+  },
+  {
+    id: 'kk-esquinas', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 3: colocar las esquinas', yellowUp: true, focus: 'all',
+    holding: 'Con el amarillo arriba (U). Las aristas ya están bien, así que todo va en color. Busca una esquina bien colocada (sus tres colores son los de los tres centros que la rodean, aunque esté girada) y ponla arriba, delante y a la derecha. El resplandor marca las tres esquinas que cambian de sitio.',
+    intro: 'Solo hay que llevar cada esquina a su sitio; si está girada, se arregla en el último paso. El algoritmo mueve tres esquinas en círculo y deja quieta la de arriba, delante a la derecha.',
+    points: [
+      "Aplícalo, mira el cubo y, si aún no están las cuatro bien, repítelo: hace falta de una a tres veces.",
+      "Si ninguna esquina está bien colocada, aplica el algoritmo una vez desde cualquier posición: así alguna quedará bien y seguirás como en el primer caso.",
+    ],
+    demos: [
+      { id: 'una-bien', title: 'Una esquina bien (arriba, delante a la derecha)', instructions: `Una esquina está en su sitio. Pon el cubo de forma que quede arriba, delante a la derecha, y haz ${KK_CORNERS}: las otras tres giran en círculo y las cuatro quedan bien (aquí, a la primera).`, alg: KK_CORNERS, highlight: ['BOY', 'BRY', 'GRY'] },
+      { id: 'ninguna', title: 'Ninguna esquina bien', instructions: `Ninguna esquina está en su sitio. Haz ${KK_CORNERS} una vez desde cualquier posición: una esquina queda bien. Ponla arriba, delante a la derecha, y sigue como en el caso anterior.`, alg: KK_CORNERS, setup: `${KK_EDGES} ${KK_EDGES}`, highlight: ['BOY', 'GRY', 'GOY'] },
+    ],
+  },
+  {
+    id: 'kk-orientar', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 4: orientar las esquinas', yellowUp: true, focus: 'all',
+    holding: 'Con el amarillo arriba (U) y SIN girar el cubo entero en todo el paso: entre una esquina y la siguiente solo giras la capa U. Todo va en color: el cubo está ordenado salvo las esquinas giradas. El resplandor marca la esquina que se trabaja.',
+    intro: 'Todas las piezas están en su sitio, pero hay esquinas con el amarillo mirando a un lado. Pon una de ellas arriba, delante a la derecha, y repite el algoritmo hasta que su amarillo mire hacia arriba. **Parecerá que desmontas el cubo**, pero no pasa nada: al terminar la última esquina, todo vuelve a su sitio.',
+    points: [
+      "Amarillo mirando a la **derecha**: repite el algoritmo **2 veces**. Mirando al **frente**: **4 veces**. Nunca 1 o 3 veces.",
+      "Acaba siempre el algoritmo completo, aunque a mitad la esquina ya parezca bien: si no, se desarma el resto del cubo.",
+      "Cuando una esquina esté bien, gira solo la capa U para traer la siguiente esquina girada a la misma posición (arriba, delante a la derecha). No gires el cubo entero.",
+      "Al acabar, gira U hasta alinear la capa con los centros: el cubo queda resuelto.",
+    ],
+    demos: [
+      { id: 'derecha', title: 'Amarillo mirando a la derecha: 2 veces', instructions: `La esquina de arriba, delante a la derecha, tiene el amarillo mirando a la derecha. Repite ${KK_TWIST} dos veces (${twice(KK_TWIST, 2)}): el amarillo queda arriba. El resto parece desmontado, no te asustes.`, alg: twice(KK_TWIST, 2), setup: invert(KK_FULL), highlight: ['GOY'] },
+      { id: 'frente', title: 'Amarillo mirando al frente: 4 veces', instructions: `Tras girar U (U), la siguiente esquina girada está arriba, delante a la derecha, con el amarillo mirando al frente. Repite ${KK_TWIST} cuatro veces (${twice(KK_TWIST, 4)}) sin parar a mirar: el amarillo queda arriba.`, alg: twice(KK_TWIST, 4), setup: `${invert(KK_FULL)} ${twice(KK_TWIST, 2)} U`, highlight: ['BOY'] },
+      { id: 'alinear', title: 'Alinear la capa U', instructions: "Las cuatro esquinas tienen ya el amarillo arriba. Solo falta alinear la capa de arriba con los centros: gira U hasta que cada pieza coincida con el suyo (aquí, U') y el cubo queda resuelto.", alg: "U'", setup: `${invert(KK_FULL)} ${twice(KK_TWIST, 2)} U ${twice(KK_TWIST, 4)}` },
+    ],
+  },
 ]
 
 export const SOURCES = [
   { title: "Rubik's: Solution Guide oficial (PDF; copia en docs/ del repo)", url: 'https://cdn.shopify.com/s/files/1/0881/0899/0813/files/Rubiks-3x3-Solve-Guide.pdf' },
   { title: "Rubik's: vídeos de cada etapa", url: 'https://www.rubiks.com/solve-it' },
+  { title: 'Kubekings: Cómo hacer el cubo de Rubik (variante de la última capa)', url: 'https://kubekings.com/blog/post/como-hacer-el-cubo-de-rubik' },
   { title: 'Speedsolving wiki: Layer by Layer', url: 'https://www.speedsolving.com/wiki/index.php/LBL' },
   { title: 'Ruwix: método de principiantes', url: 'https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/' },
 ]
+
+/** Camino de lecciones por el que se avanza: el de la guía oficial o la variante Kubekings (comparten hasta la cruz amarilla). */
+export function pathOf(lesson: Lesson, lessons: readonly Lesson[] = LESSONS): Lesson[] {
+  const official = lessons.filter((l) => !l.variant)
+  if (!lesson.variant) return official
+  return [...official.slice(0, official.findIndex((l) => l.id === 'cruz-amarilla') + 1), ...lessons.filter((l) => l.variant === lesson.variant)]
+}

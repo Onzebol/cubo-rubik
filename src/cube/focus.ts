@@ -8,12 +8,13 @@ export type Focus =
   // última capa: dos primeras capas terminadas en color y, de la última, solo lo que importa en cada paso
   | 'two-layers-yellow' // cruz amarilla y orientar esquinas: solo el amarillo
   | 'two-layers-yellow-corners' // colocar esquinas: esquinas enteras (importan sus colores laterales) y el amarillo
+  | 'two-layers-edges' // variante Kubekings, ordenar la cruz: aristas enteras (importan sus colores laterales) y el amarillo
   // colocar aristas: las esquinas ya están bien, así que va todo el cubo en color ('all')
 
 type CubieFace = Cubie['faces'][number]
 
 /** Focos que deciden por pegatina: las piezas resaltadas no se pintan enteras por ser las explicadas. */
-export const STICKER_FOCI: readonly Focus[] = ['two-layers-yellow', 'two-layers-yellow-corners']
+export const STICKER_FOCI: readonly Focus[] = ['two-layers-yellow', 'two-layers-yellow-corners', 'two-layers-edges']
 
 /** La decisión es por pieza (posición de origen), así que no cambia al moverse. Los centros siempre van en color. */
 export function isColored(focus: Focus, c: Cubie, face: CubieFace): boolean {
@@ -25,5 +26,6 @@ export function isColored(focus: Focus, c: Cubie, face: CubieFace): boolean {
     case 'white-layer': return c.faces.some((f) => f.c === 'W')
     case 'two-layers-yellow': return dosPrimerasCapas || face.c === 'Y'
     case 'two-layers-yellow-corners': return dosPrimerasCapas || face.c === 'Y' || (ultimaCapa && c.faces.length === 3)
+    case 'two-layers-edges': return dosPrimerasCapas || face.c === 'Y' || (ultimaCapa && c.faces.length === 2)
   }
 }

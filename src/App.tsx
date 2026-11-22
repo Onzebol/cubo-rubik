@@ -4,7 +4,7 @@ import { AlgoPlayer } from './components/AlgoPlayer'
 import { Cube3D } from './components/Cube3D'
 import { isSolved, parseAlg, type Face } from './cube/cube'
 import { createCubies, stickersOf } from './cube/cubies'
-import { LESSONS, SOURCES, type Lesson } from './lessons'
+import { LESSONS, SOURCES, pathOf, type Lesson } from './lessons'
 import { UpdateBanner } from './pwa/UpdateBanner'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useAnimator } from './useAnimator'
@@ -40,7 +40,10 @@ function Rich({ text }: { text: string }) {
 
 function Home({ done }: { done: string[] }) {
   const stages = [...new Set(LESSONS.map((l) => l.stage))]
-  const pct = Math.round((done.length / LESSONS.length) * 100)
+  // el progreso cuenta solo el camino de la guía oficial; la variante es una alternativa para comparar
+  const official = LESSONS.filter((l) => !l.variant)
+  const hechas = official.filter((l) => done.includes(l.id)).length
+  const pct = Math.round((hechas / official.length) * 100)
   return (
     <>
       <section className="hero">
@@ -49,11 +52,14 @@ function Home({ done }: { done: string[] }) {
         <div className="bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso">
           <span style={{ width: `${pct}%` }} />
         </div>
-        <small>{done.length} de {LESSONS.length} lecciones</small>
+        <small>{hechas} de {official.length} lecciones</small>
       </section>
       {stages.map((s) => (
         <section key={s}>
           <h2>{s}</h2>
+          {LESSONS.find((l) => l.stage === s)?.variant && (
+            <p className="hint">Alternativa para comparar: comparte la cruz amarilla con la guía oficial, pero ordena la última capa en otro orden y con otros algoritmos. No cuenta para el progreso.</p>
+          )}
           <ul className="lessons">
             {LESSONS.filter((l) => l.stage === s).map((l) => (
               <li key={l.id}>
@@ -71,9 +77,10 @@ function Home({ done }: { done: string[] }) {
 }
 
 function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: boolean; toggle: () => void; instant: boolean }) {
-  const i = LESSONS.indexOf(lesson)
-  const prev = LESSONS[i - 1]
-  const next = LESSONS[i + 1]
+  const path = pathOf(lesson)
+  const i = path.indexOf(lesson)
+  const prev = path[i - 1]
+  const next = path[i + 1]
   return (
     <article className="lesson">
       <p className="stage">{lesson.stage}</p>
@@ -84,6 +91,9 @@ function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: b
         {lesson.points.map((p) => <li key={p}><Rich text={p} /></li>)}
       </ul>
       {lesson.tip && <p className="tip">💡 <Rich text={lesson.tip} /></p>}
+      {lesson.altRoute && (
+        <p className="tip">🔀 <Rich text={lesson.altRoute.text} /> <a href={`#/leccion/${lesson.altRoute.id}`}>{lesson.altRoute.label}</a></p>
+      )}
       <h2>Míralo en el cubo</h2>
       <p className="hint">Desbloquea el cubo con el candado y arrástralo para verlo desde otro lado. Parte de la posición previa al algoritmo. El halo marca la pieza que se explica.</p>
       {lesson.demos.map((d) => (
@@ -153,7 +163,7 @@ function Sources() {
   return (
     <article className="lesson">
       <h1>Fuentes</h1>
-      <p>El método y los algoritmos siguen la guía oficial de Rubik&apos;s. Hay una copia en el repositorio (<code>docs/</code>).</p>
+      <p>El método y los algoritmos siguen la guía oficial de Rubik&apos;s. Hay una copia en el repositorio (<code>docs/</code>). La variante de la última capa sigue el tutorial de Kubekings.</p>
       <ul className="points">
         {SOURCES.map((s) => <li key={s.url}><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a></li>)}
       </ul>
