@@ -22,7 +22,7 @@ const ALL_FACES: Face[] = ['F', 'B', 'R', 'L', 'U', 'D']
 // Cada pieza es un sólido negro de verdad: tres bloques cruzados, cada uno 2·R más corto en dos ejes.
 // Su unión es un cubo con las aristas rebajadas R px; así no hay huecos ni canales por los que ver
 // a través, y las caras exteriores redondeadas (.base) tapan los escalones.
-const R = 3
+const R = 8
 const SOLID_FACES: CSSProperties[] = (() => {
   const out: CSSProperties[] = []
   const lado = CUBIE_SIZE - 2 * R
