@@ -81,7 +81,7 @@ button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible
 .cubie { position: absolute; width: var(--s); height: var(--s); left: calc(var(--s) / -2); top: calc(var(--s) / -2); transform-style: preserve-3d; }
 .base, .sticker { position: absolute; inset: 0; backface-visibility: hidden; }
 .base { background: #0b0b0d; inset: -0.5px; }
-.core { position: absolute; width: calc(var(--s) * 2.9); height: calc(var(--s) * 2.9); left: calc(var(--s) * -1.45); top: calc(var(--s) * -1.45); transform-style: preserve-3d; }
+.core { position: absolute; width: calc(var(--s) * 2); height: calc(var(--s) * 2); left: calc(var(--s) * -1); top: calc(var(--s) * -1); transform-style: preserve-3d; }
 .core .base { inset: 0; }
 .sticker { inset: 3px; border-radius: 7px; display: grid; place-items: center; }
 .label { font-weight: 800; font-size: 18px; color: rgba(0,0,0,.45); }

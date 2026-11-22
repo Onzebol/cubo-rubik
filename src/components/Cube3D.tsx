@@ -19,8 +19,9 @@ const FACE_TRANSFORM: Record<Face, string> = {
 }
 const ALL_FACES: Face[] = ['F', 'B', 'R', 'L', 'U', 'D']
 
-// Núcleo interior (2,9 cubies de lado) para que el cubo sea sólido por dentro
-const CORE_HALF = CUBIE_SIZE * 1.45
+// Núcleo interior (2 cubies de lado, bien hundido bajo las pegatinas para que
+// ninguna GPU lo pinte por encima) para que el cubo sea sólido por dentro
+const CORE_HALF = CUBIE_SIZE
 const CORE_TRANSFORM: Record<Face, string> = Object.fromEntries(
   ALL_FACES.map((f) => [f, FACE_TRANSFORM[f].replace(`${HALF}px`, `${CORE_HALF}px`)]),
 ) as Record<Face, string>
