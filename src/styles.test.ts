@@ -26,8 +26,11 @@ describe('fila de movimientos del reproductor', () => {
 })
 
 describe('cabecera en móvil', () => {
-  it('el menú pasa a otra línea en vez de ensanchar la página (la barra fija de abajo se descuadraría)', () => {
-    expect(regla('.top')).toContain('flex-wrap: wrap')
-    expect(regla('.top nav')).toContain('flex-wrap: wrap')
+  it('el menú es un desplegable solo en móvil: oculto por defecto allí y botón escondido en pantalla ancha', () => {
+    expect(regla('.menu-btn')).toContain('display: none')
+    const movil = css.slice(css.indexOf('@media (max-width: 600px) {', css.indexOf('.menu-btn {')))
+    expect(movil).toContain('.menu-btn { display: inline-flex; }')
+    expect(movil).toContain('.top nav { display: none;')
+    expect(movil).toContain('.top nav.open { display: flex; }')
   })
 })

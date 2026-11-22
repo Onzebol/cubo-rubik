@@ -27,7 +27,16 @@ code { background: var(--card); padding: 1px 6px; border-radius: 4px; }
 .top nav { display: flex; flex-wrap: wrap; gap: 4px; }
 .top nav a { color: var(--muted); text-decoration: none; padding: 10px 10px; border-radius: 8px; min-height: 44px; display: inline-flex; align-items: center; font-size: .92rem; }
 .top nav a[aria-current='page'] { color: var(--text); background: var(--card); }
-@media (max-width: 420px) { .top nav { gap: 0; } .top nav a { padding: 10px 8px; font-size: .88rem; } }
+.menu-btn { display: none; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+/* móvil: los enlaces van en un desplegable bajo la cabecera */
+@media (max-width: 600px) {
+  .top { flex-wrap: nowrap; }
+  .menu-btn { display: inline-flex; }
+  .top nav { display: none; position: absolute; top: 100%; left: 12px; right: 12px; flex-direction: column; gap: 2px; padding: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px light-dark(rgba(0, 0, 0, .18), rgba(0, 0, 0, .5)); }
+  .top nav.open { display: flex; }
+  .top nav a { font-size: 1.05rem; padding: 12px 14px; }
+  .top nav a[aria-current='page'] { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+}
 
 .hero p { color: var(--muted); }
 .lessons { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }

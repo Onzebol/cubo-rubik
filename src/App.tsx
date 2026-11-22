@@ -162,6 +162,18 @@ const reducedMotion = () =>
 export default function App({ instant = reducedMotion() }: { instant?: boolean }) {
   const hash = useHash()
   useEffect(() => { window.scrollTo?.(0, 0) }, [hash])
+  // menú desplegable (solo en móvil; en pantalla ancha el CSS lo muestra siempre abierto)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const top = useRef<HTMLElement>(null)
+  useEffect(() => { setMenuOpen(false) }, [hash])
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
+    const onDown = (e: PointerEvent) => { if (!top.current?.contains(e.target as Node)) setMenuOpen(false) }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onDown)
+    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onDown) }
+  }, [menuOpen])
 
   let page: ReactNode
   const m = hash.match(/^#\/leccion\/(.+)$/)
@@ -176,9 +188,12 @@ export default function App({ instant = reducedMotion() }: { instant?: boolean }
 
   return (
     <>
-      <header className="top">
+      <header className="top" ref={top}>
         <a href="#/" className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width="28" height="28" />Cubo<span>Fácil</span></a>
-        <nav aria-label="Principal">
+        <button type="button" className="menu-btn" aria-expanded={menuOpen} aria-controls="menu-principal" onClick={() => setMenuOpen((o) => !o)}>
+          <span aria-hidden="true">{menuOpen ? '✕' : '☰'}</span> Menú
+        </button>
+        <nav id="menu-principal" aria-label="Principal" className={menuOpen ? 'open' : undefined}>
           <a href="#/" aria-current={cur(!hash.startsWith('#/practica') && !hash.startsWith('#/fuentes') && !hash.startsWith('#/algoritmos'))}>Lecciones</a>
           <a href="#/algoritmos" aria-current={cur(hash === '#/algoritmos')}>Algoritmos</a>
           <a href="#/practica" aria-current={cur(hash === '#/practica')}>Practicar</a>
