@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+import { ALGORITHMS, ALGORITHM_GROUPS } from './algorithms'
 import { LESSONS } from './lessons'
 
 beforeEach(() => {
@@ -54,6 +55,17 @@ describe('App', () => {
     await u.click(screen.getByRole('link', { name: /la margarita/i }))
     await u.click(await screen.findByRole('checkbox', { name: /hecha/i }))
     expect(JSON.parse(localStorage.getItem('cubo-progreso') ?? '[]')).toContain('margarita')
+  })
+  it('la sección de algoritmos tiene su pestaña y muestra todos con su reproductor', async () => {
+    const u = userEvent.setup()
+    render(<App instant />)
+    await u.click(screen.getByRole('link', { name: 'Algoritmos' }))
+    expect(await screen.findByRole('heading', { level: 1, name: /algoritmos de cuberos/i })).toBeInTheDocument()
+    for (const g of ALGORITHM_GROUPS) expect(screen.getByRole('heading', { level: 2, name: g.title })).toBeInTheDocument()
+    for (const a of ALGORITHMS) expect(screen.getByText(a.name)).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Siguiente' })).toHaveLength(ALGORITHMS.length)
+    expect(screen.getByRole('link', { name: 'Algoritmos' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: 'Lecciones' })).not.toHaveAttribute('aria-current')
   })
   it('la página de práctica tiene botones de giro y mezclar', async () => {
     window.location.hash = '#/practica'

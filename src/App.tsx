@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import './App.css'
 import { AlgoPlayer } from './components/AlgoPlayer'
+import { AlgorithmsPage } from './components/AlgorithmsPage'
 import { Cube3D } from './components/Cube3D'
 import { isSolved, parseAlg, type Face } from './cube/cube'
 import { createCubies, stickersOf } from './cube/cubies'
@@ -184,6 +185,7 @@ export default function App({ instant = reducedMotion() }: { instant?: boolean }
   const lesson = m ? LESSONS.find((l) => l.id === m[1]) : undefined
   if (lesson) page = <LessonView key={lesson.id} lesson={lesson} done={done.includes(lesson.id)} toggle={() => toggle(lesson.id)} instant={instant} />
   else if (hash === '#/practica') page = <Practice instant={instant} />
+  else if (hash === '#/algoritmos') page = <AlgorithmsPage instant={instant} />
   else if (hash === '#/fuentes') page = <Sources />
   else page = <Home done={done} />
 
@@ -194,7 +196,8 @@ export default function App({ instant = reducedMotion() }: { instant?: boolean }
       <header className="top">
         <a href="#/" className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width="28" height="28" />Cubo<span>Fácil</span></a>
         <nav aria-label="Principal">
-          <a href="#/" aria-current={cur(!hash.startsWith('#/practica') && !hash.startsWith('#/fuentes'))}>Lecciones</a>
+          <a href="#/" aria-current={cur(!hash.startsWith('#/practica') && !hash.startsWith('#/fuentes') && !hash.startsWith('#/algoritmos'))}>Lecciones</a>
+          <a href="#/algoritmos" aria-current={cur(hash === '#/algoritmos')}>Algoritmos</a>
           <a href="#/practica" aria-current={cur(hash === '#/practica')}>Practicar</a>
           <a href="#/fuentes" aria-current={cur(hash === '#/fuentes')}>Fuentes</a>
         </nav>
