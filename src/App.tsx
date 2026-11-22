@@ -56,7 +56,8 @@ function Home() {
 function StepLink({ href, dir, title }: { href: string; dir: 'prev' | 'next'; title: string }) {
   return (
     <a href={href} className={`step ${dir}`} aria-label={`${dir === 'prev' ? 'Anterior' : 'Siguiente'}: ${title}`}>
-      {dir === 'prev' ? '← Anterior' : 'Siguiente →'}
+      <span>{dir === 'prev' ? '← Anterior' : 'Siguiente →'}</span>
+      <small>{title}</small>
     </a>
   )
 }
