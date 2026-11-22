@@ -26,6 +26,28 @@ describe('App', () => {
     const l = LESSONS.find((x) => x.id === 'cruz-amarilla')!
     for (const d of l.demos) expect(await screen.findByText(d.instructions)).toBeInTheDocument()
   })
+  it('la variante Kubekings sale aparte y no cuenta para el progreso', () => {
+    localStorage.setItem('cubo-progreso', JSON.stringify(['kk-aristas']))
+    render(<App instant />)
+    expect(screen.getByRole('heading', { level: 2, name: /variante Kubekings/i })).toBeInTheDocument()
+    expect(screen.getByText(/0 de \d+ lecciones/)).toBeInTheDocument()
+  })
+  it('la cruz amarilla enlaza con la variante y esta, con la guía oficial', async () => {
+    window.location.hash = '#/leccion/cruz-amarilla'
+    const { unmount } = render(<App instant />)
+    expect(await screen.findByRole('link', { name: /Probar la variante Kubekings/i })).toHaveAttribute('href', '#/leccion/kk-aristas')
+    unmount()
+    window.location.hash = '#/leccion/kk-aristas'
+    render(<App instant />)
+    expect(await screen.findByRole('link', { name: /Volver al método de la guía oficial/i })).toHaveAttribute('href', '#/leccion/orientar-esquinas')
+  })
+  it('en la variante se avanza por sus pasos: la cruz amarilla, atrás; Kubekings 3, delante', async () => {
+    window.location.hash = '#/leccion/kk-aristas'
+    render(<App instant />)
+    const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
+    expect(pager).toHaveTextContent(/la cruz amarilla/)
+    expect(pager).toHaveTextContent(/Kubekings 3/)
+  })
   it('marca una lección como hecha y guarda el progreso', async () => {
     const u = userEvent.setup()
     render(<App instant />)
