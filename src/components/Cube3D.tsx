@@ -38,8 +38,11 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
   const enVistaPorDefecto = view.rx === DEFAULT_VIEW.rx && view.ry === DEFAULT_VIEW.ry
   const extra = useMemo(() => new Set(alsoColored), [alsoColored])
   const drag = useRef<{ x: number; y: number } | null>(null)
+  /** bloqueado (por defecto): el dedo hace scroll en la página y no gira la vista */
+  const [locked, setLocked] = useState(true)
 
   const onDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (locked) return
     drag.current = { x: e.clientX, y: e.clientY }
     e.currentTarget.setPointerCapture?.(e.pointerId)
   }
@@ -55,13 +58,13 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
   return (
     <div className="cube-wrap">
     <div
-      className={`cube3d ${className ?? ''}`}
+      className={`cube3d${locked ? ' locked' : ''} ${className ?? ''}`}
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
       role="img"
-      aria-label="Cubo de Rubik en 3D. Arrastra para girar la vista."
+      aria-label={`Cubo de Rubik en 3D. ${locked ? 'Bloqueado: desbloquéalo con el candado para girar la vista.' : 'Arrastra para girar la vista.'}`}
     >
       <div className="scene" style={{ transform: `rotateX(${view.rx}deg) rotateY(${view.ry}deg)` }}>
         {cubies.map((c) => {
@@ -94,6 +97,16 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
         })}
       </div>
     </div>
+    <button
+      type="button"
+      className="view-lock"
+      onClick={() => { drag.current = null; setLocked((l) => !l) }}
+      aria-pressed={!locked}
+      aria-label={locked ? 'Desbloquear el giro del cubo' : 'Bloquear el giro del cubo'}
+      title={locked ? 'Desbloquear para girar el cubo' : 'Bloquear el cubo'}
+    >
+      {locked ? '🔒' : '🔓'}
+    </button>
     <button
       type="button"
       className="view-reset"
