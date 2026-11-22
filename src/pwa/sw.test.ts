@@ -13,11 +13,19 @@ function cargarSW(version = 'v1', assets: string[] = ASSETS, cachesPrevias: Reco
   const almacen = new Map<string, Map<string, string>>(
     Object.entries(cachesPrevias).map(([nombre, urls]) => [nombre, new Map(urls.map((u) => [u, `viejo:${u}`]))]),
   )
+  const pedidosPrecarga: Request[] = []
   const caches = {
     open: async (nombre: string) => {
       if (!almacen.has(nombre)) almacen.set(nombre, new Map())
       const c = almacen.get(nombre)!
-      return { addAll: async (urls: string[]) => { for (const u of urls) c.set(u, `cache:${u}`) } }
+      return {
+        addAll: async (pedidos: Request[]) => {
+          for (const p of pedidos) {
+            pedidosPrecarga.push(p)
+            c.set(p.url, `cache:${p.url}`)
+          }
+        },
+      }
     },
     keys: async () => [...almacen.keys()],
     delete: async (nombre: string) => almacen.delete(nombre),
@@ -53,7 +61,7 @@ function cargarSW(version = 'v1', assets: string[] = ASSETS, cachesPrevias: Reco
   const pedir = (url: string, extra: Record<string, unknown> = {}) =>
     lanzar('fetch', { request: { url, method: 'GET', mode: 'cors', ...extra } })
 
-  return { almacen, self, red, lanzar, pedir, escuchadores }
+  return { almacen, self, red, lanzar, pedir, escuchadores, pedidosPrecarga }
 }
 
 describe('service worker: instalación', () => {
@@ -64,6 +72,12 @@ describe('service worker: instalación', () => {
     expect([...cache.keys()].sort()).toEqual(
       [SCOPE, `${SCOPE}index.html`, `${SCOPE}assets/index-abc.js`, `${SCOPE}assets/index-abc.css`, `${SCOPE}icon.svg`].sort(),
     )
+  })
+  it('precarga saltándose la caché HTTP del navegador (cache: reload), para no guardar archivos viejos', async () => {
+    const sw = cargarSW('v1')
+    await sw.lanzar('install')
+    expect(sw.pedidosPrecarga).toHaveLength(ASSETS.length)
+    for (const p of sw.pedidosPrecarga) expect(p.cache, p.url).toBe('reload')
   })
   it('NO se activa solo: se queda esperando a que el usuario pulse «Actualizar»', async () => {
     const sw = cargarSW()

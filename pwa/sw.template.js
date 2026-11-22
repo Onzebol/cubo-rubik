@@ -9,7 +9,9 @@ const ARCHIVOS = __ASSETS__.map((a) => new URL(a, self.registration.scope).href)
 const PAGINA_PRINCIPAL = new URL('./index.html', self.registration.scope).href
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ARCHIVOS)))
+  // cache: 'reload' salta la caché HTTP del navegador. GitHub Pages sirve todo con max-age=600: sin esto, una versión
+  // nueva podría guardar un index.html (o assets) de hace unos minutos y la app «actualizada» seguiría siendo la vieja.
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ARCHIVOS.map((url) => new Request(url, { cache: 'reload' })))))
 })
 
 self.addEventListener('activate', (event) => {
