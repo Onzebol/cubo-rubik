@@ -181,7 +181,7 @@ export default function App({ instant = reducedMotion() }: { instant?: boolean }
   return (
     <>
       <header className="top">
-        <a href="#/" className="brand">🧊 Cubo<span>Fácil</span></a>
+        <a href="#/" className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width="28" height="28" />Cubo<span>Fácil</span></a>
         <nav aria-label="Principal">
           <a href="#/" aria-current={cur(!hash.startsWith('#/practica') && !hash.startsWith('#/fuentes'))}>Lecciones</a>
           <a href="#/practica" aria-current={cur(hash === '#/practica')}>Practicar</a>
