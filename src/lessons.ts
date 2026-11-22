@@ -24,8 +24,6 @@ export interface Lesson {
   id: string
   stage: 'Antes de empezar' | 'Primera capa' | 'Capa del medio' | 'Última capa' | 'Última capa: variante Kubekings'
   title: string
-  /** una frase para el botón de navegación entre pasos */
-  summary: string
   holding: string
   intro: string
   points: string[]
@@ -65,7 +63,6 @@ const KK_FULL = `${twice(KK_TWIST, 2)} U ${twice(KK_TWIST, 4)} U U U`
 export const LESSONS: Lesson[] = [
   {
     id: 'notacion', stage: 'Antes de empezar', title: 'Conoce tu cubo y la notación', yellowUp: false, focus: 'all',
-    summary: 'Qué es cada letra y cada giro, antes de mover nada.',
     holding: 'Deja el cubo sobre la mesa y no cambies la cara frontal durante un algoritmo.',
     intro: 'Resolverás el cubo capa a capa. Cada letra es una cara y un giro horario mirándola de frente.',
     points: [
@@ -83,7 +80,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'margarita', stage: 'Primera capa', title: 'Paso 1: la margarita', yellowUp: true, focus: 'white-edges',
-    summary: 'Lleva las aristas blancas arriba, como pétalos.',
     holding: 'Con el centro AMARILLO en la cara de arriba (U).',
     intro: 'Objetivo: las 4 aristas blancas en la capa de arriba, con el **blanco hacia arriba**, rodeando el centro amarillo, como los pétalos de una margarita. El otro color de cada arista no importa todavía. Busca las 4 aristas blancas (una pegatina blanca y otra de color): pueden estar arriba, en el medio o abajo.',
     points: [
@@ -103,7 +99,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'cruz-blanca', stage: 'Primera capa', title: 'Paso 2: cruz blanca con aristas emparejadas', yellowUp: true, focus: 'white-edges',
-    summary: 'Baja los pétalos y forma la cruz blanca.',
     holding: 'Con la margarita arriba (U), mirando a la cara frontal.',
     intro: 'Baja cada arista blanca para formar la cruz blanca, con el otro color de cada arista igual al centro de su lado.',
     points: [
@@ -117,7 +112,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'esquinas-blancas', stage: 'Primera capa', title: 'Paso 3: las esquinas blancas', yellowUp: false, focus: 'white-layer',
-    summary: 'Completa la primera capa colocando las esquinas blancas.',
     holding: 'Con la cruz blanca en la cara de arriba (U).',
     intro: 'La esquina bien colocada queda entre los centros que tienen sus mismos colores (la roja/azul/blanca, entre el rojo, el azul y el blanco).',
     points: [
@@ -134,7 +128,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'capa-medio', stage: 'Capa del medio', title: 'Resolver la capa del medio', yellowUp: true, focus: 'white-layer',
-    summary: 'Coloca las 4 aristas de la capa central.',
     holding: 'Da la vuelta al cubo: la cara blanca completada abajo (D).',
     intro: 'Coloca las 4 aristas de la capa central, las que no llevan amarillo.',
     points: [
@@ -150,7 +143,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'cruz-amarilla', stage: 'Última capa', title: 'Paso 1: la cruz amarilla', yellowUp: true, focus: 'two-layers-yellow',
-    summary: 'Forma la cruz amarilla en la cara de arriba.',
     holding: 'Fíjate solo en las aristas amarillas de la cara de arriba (no en las esquinas). Las dos primeras capas, en color, ya están terminadas. De la última capa solo importa el amarillo, así que el resto de sus colores va en gris. El resplandor marca las aristas de arriba que se explican.',
     intro: 'Mira qué dibujo forman las aristas amarillas: un **punto**, una **«L»** o una **línea**. El mismo algoritmo las lleva de un caso al siguiente hasta formar la cruz: punto → línea → «L» → cruz.',
     points: [
@@ -169,7 +161,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'orientar-esquinas', stage: 'Última capa', title: 'Paso 2: orientar las esquinas', yellowUp: true, focus: 'two-layers-yellow',
-    summary: 'Deja todo el amarillo arriba girando las esquinas.',
     holding: 'Sujeta el cubo según cuántas esquinas amarillas haya arriba (la guía usa trucos de memoria). Las dos primeras capas, en color, ya están terminadas. De la última solo importa el amarillo, así que lo demás va en gris. El resplandor marca las 4 esquinas.',
     intro: 'Consigue que todo el amarillo quede en la cara de arriba. Cuenta cuántas esquinas tienen el amarillo mirando hacia arriba.',
     points: [
@@ -184,7 +175,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'posicionar-esquinas', stage: 'Última capa', title: 'Paso 3: colocar las esquinas amarillas', yellowUp: true, focus: 'two-layers-yellow-corners',
-    summary: 'Lleva cada esquina amarilla a su sitio.',
     holding: 'Con el amarillo arriba (U). Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las esquinas (importan sus colores laterales) y el amarillo; lo demás, en gris. El resplandor marca las 4 esquinas.',
     intro: 'Gira U hasta que dos esquinas estén bien colocadas (sus colores coinciden con los centros). Si están en diagonal, empieza por el primer ejemplo: te lleva al segundo, el de dos esquinas contiguas.',
     points: [
@@ -198,7 +188,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'posicionar-aristas', stage: 'Última capa', title: 'Paso 4: colocar las aristas amarillas', yellowUp: true, focus: 'all',
-    summary: 'Último paso: coloca las aristas y resuelve el cubo.',
     holding: 'Con la cara de un solo color como cara trasera (B) y el amarillo arriba. Si no hay ninguna, da igual. Las dos primeras capas y las cuatro esquinas ya están bien, así que todo va en color. El resplandor marca las aristas que se mueven.',
     intro: 'Último paso: las aristas de arriba van a su sitio y el cubo queda resuelto.',
     points: [
@@ -212,7 +201,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'kk-aristas', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 2: ordenar las aristas de la cruz', yellowUp: true, focus: 'two-layers-edges',
-    summary: 'Variante Kubekings: ordena las aristas de la cruz.',
     holding: 'Con el amarillo arriba (U). Pon las dos aristas bien colocadas al fondo (atrás) y a la izquierda. Las dos primeras capas, en color, ya están terminadas. De la última capa van en color las aristas (importan sus colores laterales); de las esquinas solo importa el amarillo. El resplandor marca las dos aristas que se intercambian.',
     intro: 'Ya tienes la cruz amarilla, pero los colores laterales de sus aristas pueden no coincidir con los centros. Ahora los ordenas: cada arista debe tener el mismo color que el centro de su cara. Las esquinas todavía no importan. Gira U hasta que al menos dos aristas estén bien: siempre se consigue, y solo hay dos casos: **contiguas** u **opuestas**.',
     points: [
@@ -228,7 +216,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'kk-esquinas', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 3: colocar las esquinas', yellowUp: true, focus: 'all',
-    summary: 'Variante Kubekings: lleva cada esquina a su sitio.',
     holding: 'Con el amarillo arriba (U). Las aristas ya están bien, así que todo va en color. Busca una esquina bien colocada (sus tres colores son los de los tres centros que la rodean, aunque esté girada) y ponla arriba, delante y a la derecha. El resplandor marca las tres esquinas que cambian de sitio.',
     intro: 'Solo hay que llevar cada esquina a su sitio; si está girada, se arregla en el último paso. El algoritmo mueve tres esquinas en círculo y deja quieta la de arriba, delante a la derecha.',
     points: [
@@ -242,7 +229,6 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'kk-orientar', stage: 'Última capa: variante Kubekings', variant: 'kubekings', title: 'Kubekings 4: orientar las esquinas', yellowUp: true, focus: 'all',
-    summary: 'Variante Kubekings: gira las esquinas y termina el cubo.',
     holding: 'Con el amarillo arriba (U) y SIN girar el cubo entero en todo el paso: entre una esquina y la siguiente solo giras la capa U. Todo va en color: el cubo está ordenado salvo las esquinas giradas. El resplandor marca la esquina que se trabaja.',
     intro: 'Todas las piezas están en su sitio, pero hay esquinas con el amarillo mirando a un lado. Pon una de ellas arriba, delante a la derecha, y repite el algoritmo hasta que su amarillo mire hacia arriba. **Parecerá que desmontas el cubo**, pero no pasa nada: al terminar la última esquina, todo vuelve a su sitio.',
     points: [

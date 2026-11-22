@@ -52,13 +52,11 @@ function Home() {
   )
 }
 
-/** Botón de la barra fija de abajo: título grande y, debajo, una descripción corta */
-function StepLink({ href, dir, title, summary }: { href: string; dir: 'prev' | 'next'; title: string; summary: string }) {
+/** Botón de la barra fija de abajo; el nombre del paso va en la etiqueta accesible */
+function StepLink({ href, dir, title }: { href: string; dir: 'prev' | 'next'; title: string }) {
   return (
-    <a href={href} className={`step ${dir}`}>
-      <span className="dir" aria-hidden="true">{dir === 'prev' ? '← Anterior' : 'Siguiente →'}</span>
-      <span className="step-title">{title}</span>
-      <span className="step-desc">{summary}</span>
+    <a href={href} className={`step ${dir}`} aria-label={`${dir === 'prev' ? 'Anterior' : 'Siguiente'}: ${title}`}>
+      {dir === 'prev' ? '← Anterior' : 'Siguiente →'}
     </a>
   )
 }
@@ -87,10 +85,10 @@ function LessonView({ lesson, instant }: { lesson: Lesson; instant: boolean }) {
         <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} instructions={d.instructions} yellowUp={lesson.yellowUp} title={d.title} focus={d.focus ?? lesson.focus} highlight={d.highlight} instant={instant} />
       ))}
       <nav className="pager" aria-label="Lecciones">
-        {prev ? <StepLink href={`#/leccion/${prev.id}`} dir="prev" title={prev.title} summary={prev.summary} /> : <span />}
+        {prev ? <StepLink href={`#/leccion/${prev.id}`} dir="prev" title={prev.title} /> : <span />}
         {next
-          ? <StepLink href={`#/leccion/${next.id}`} dir="next" title={next.title} summary={next.summary} />
-          : <StepLink href="#/practica" dir="next" title="Practicar" summary="Mezcla el cubo y prueba lo que has aprendido." />}
+          ? <StepLink href={`#/leccion/${next.id}`} dir="next" title={next.title} />
+          : <StepLink href="#/practica" dir="next" title="Practicar" />}
       </nav>
     </article>
   )

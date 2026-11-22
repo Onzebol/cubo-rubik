@@ -44,25 +44,24 @@ describe('App', () => {
     window.location.hash = '#/leccion/kk-aristas'
     render(<App instant />)
     const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
-    expect(pager).toHaveTextContent(/la cruz amarilla/)
-    expect(pager).toHaveTextContent(/Kubekings 3/)
+    expect(within(pager).getByRole('link', { name: /^Anterior.*la cruz amarilla/ })).toBeInTheDocument()
+    expect(within(pager).getByRole('link', { name: /^Siguiente.*Kubekings 3/ })).toBeInTheDocument()
   })
-  it('la lección lleva una barra fija con paso anterior y siguiente: título y descripción', async () => {
+  it('la lección lleva una barra fija con solo Anterior y Siguiente', async () => {
     window.location.hash = '#/leccion/cruz-blanca'
     render(<App instant />)
     const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
-    const prev = LESSONS.find((l) => l.id === 'margarita')!
-    const next = LESSONS.find((l) => l.id === 'esquinas-blancas')!
-    expect(within(pager).getByRole('link', { name: new RegExp(prev.title) })).toHaveAttribute('href', '#/leccion/margarita')
-    expect(within(pager).getByText(prev.summary)).toBeInTheDocument()
-    expect(within(pager).getByRole('link', { name: new RegExp(next.title) })).toHaveAttribute('href', '#/leccion/esquinas-blancas')
-    expect(within(pager).getByText(next.summary)).toBeInTheDocument()
+    expect(within(pager).getAllByRole('link')).toHaveLength(2)
+    expect(within(pager).getByRole('link', { name: /^Anterior/ })).toHaveAttribute('href', '#/leccion/margarita')
+    expect(within(pager).getByRole('link', { name: /^Siguiente/ })).toHaveAttribute('href', '#/leccion/esquinas-blancas')
+    expect(pager).toHaveTextContent('← Anterior')
+    expect(pager).toHaveTextContent('Siguiente →')
   })
   it('la última lección lleva a practicar y ya no hay «Marcar como hecha»', async () => {
     window.location.hash = '#/leccion/posicionar-aristas'
     render(<App instant />)
     const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
-    expect(within(pager).getByRole('link', { name: /Practicar/ })).toHaveAttribute('href', '#/practica')
+    expect(within(pager).getByRole('link', { name: /^Siguiente/ })).toHaveAttribute('href', '#/practica')
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
   })
   it('la sección de algoritmos tiene su pestaña y muestra todos con su reproductor', async () => {
