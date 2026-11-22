@@ -24,3 +24,10 @@ describe('fila de movimientos del reproductor', () => {
     expect(css.indexOf(".moves li[aria-current='step'] {")).toBeGreaterThan(css.indexOf('.moves li.hecho {'))
   })
 })
+
+describe('cabecera en móvil', () => {
+  it('el menú pasa a otra línea en vez de ensanchar la página (la barra fija de abajo se descuadraría)', () => {
+    expect(regla('.top')).toContain('flex-wrap: wrap')
+    expect(regla('.top nav')).toContain('flex-wrap: wrap')
+  })
+})
