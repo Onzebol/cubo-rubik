@@ -4,7 +4,7 @@
 import { writeFileSync } from 'node:fs'
 
 const TAMANO = 512
-const FONDO = '#14161c'
+const FONDO = '#2f6fed'
 const NEGRO = '#0b0b0d'
 // Mismos colores, vista y separación entre pegatinas que el cubo de los ejemplos (src/components/Cube3D.tsx y App.css)
 const COLORES = { arriba: '#f4f4f4', izquierda: '#009b48', derecha: '#b71234' } // U blanco, F verde, R rojo
