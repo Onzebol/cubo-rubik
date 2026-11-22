@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { ALGORITHMS, ALGORITHM_GROUPS } from './algorithms'
@@ -63,6 +63,25 @@ describe('App', () => {
     const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
     expect(within(pager).getByRole('link', { name: /^Siguiente/ })).toHaveAttribute('href', '#/practica')
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+  it('el menú de la cabecera se abre y se cierra con su botón, con Escape y al elegir una opción', async () => {
+    const u = userEvent.setup()
+    render(<App instant />)
+    const btn = screen.getByRole('button', { name: /Menú/ })
+    const nav = screen.getByRole('navigation', { name: 'Principal' })
+    expect(btn).toHaveAttribute('aria-expanded', 'false')
+    expect(nav).not.toHaveClass('open')
+    await u.click(btn)
+    expect(btn).toHaveAttribute('aria-expanded', 'true')
+    expect(nav).toHaveClass('open')
+    await u.keyboard('{Escape}')
+    expect(btn).toHaveAttribute('aria-expanded', 'false')
+    await u.click(btn)
+    await u.click(screen.getByRole('link', { name: 'Practicar' }))
+    await waitFor(() => expect(btn).toHaveAttribute('aria-expanded', 'false'))
+    await u.click(btn)
+    await u.click(document.body)
+    expect(btn).toHaveAttribute('aria-expanded', 'false')
   })
   it('la sección de algoritmos tiene su pestaña y muestra todos con su reproductor', async () => {
     const u = userEvent.setup()
