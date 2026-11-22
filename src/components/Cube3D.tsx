@@ -38,8 +38,11 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
   const enVistaPorDefecto = view.rx === DEFAULT_VIEW.rx && view.ry === DEFAULT_VIEW.ry
   const extra = useMemo(() => new Set(alsoColored), [alsoColored])
   const drag = useRef<{ x: number; y: number } | null>(null)
+  /** bloqueado (por defecto): el dedo hace scroll en la página y no gira la vista */
+  const [locked, setLocked] = useState(true)
 
   const onDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (locked) return
     drag.current = { x: e.clientX, y: e.clientY }
     e.currentTarget.setPointerCapture?.(e.pointerId)
   }
@@ -55,13 +58,13 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
   return (
     <div className="cube-wrap">
     <div
-      className={`cube3d ${className ?? ''}`}
+      className={`cube3d${locked ? ' locked' : ''} ${className ?? ''}`}
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
       role="img"
-      aria-label="Cubo de Rubik en 3D. Arrastra para girar la vista."
+      aria-label={`Cubo de Rubik en 3D. ${locked ? 'Bloqueado: desbloquéalo con el candado para girar la vista.' : 'Arrastra para girar la vista.'}`}
     >
       <div className="scene" style={{ transform: `rotateX(${view.rx}deg) rotateY(${view.ry}deg)` }}>
         {cubies.map((c) => {
@@ -94,6 +97,20 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
         })}
       </div>
     </div>
+    <button
+      type="button"
+      className="view-lock"
+      onClick={() => { drag.current = null; setLocked((l) => !l) }}
+      aria-pressed={!locked}
+      aria-label={locked ? 'Desbloquear el giro del cubo' : 'Bloquear el giro del cubo'}
+      title={locked ? 'Desbloquear para girar el cubo' : 'Bloquear el cubo'}
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+        {locked
+          ? <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 0 1 6 0v3H9Z" />
+          : <path d="M12 2a5 5 0 0 0-5 5v1h2V7a3 3 0 0 1 6 0v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Z" />}
+      </svg>
+    </button>
     <button
       type="button"
       className="view-reset"

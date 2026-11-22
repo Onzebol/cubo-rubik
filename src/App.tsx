@@ -85,7 +85,7 @@ function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: b
       </ul>
       {lesson.tip && <p className="tip">💡 <Rich text={lesson.tip} /></p>}
       <h2>Míralo en el cubo</h2>
-      <p className="hint">Arrastra el cubo para verlo desde otro lado. Parte de la posición previa al algoritmo. El halo marca la pieza que se explica.</p>
+      <p className="hint">Desbloquea el cubo con el candado y arrástralo para verlo desde otro lado. Parte de la posición previa al algoritmo. El halo marca la pieza que se explica.</p>
       {lesson.demos.map((d) => (
         <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} instructions={d.instructions} yellowUp={lesson.yellowUp} title={d.title} focus={d.focus ?? lesson.focus} highlight={d.highlight} instant={instant} />
       ))}
@@ -129,7 +129,7 @@ function Practice({ instant }: { instant: boolean }) {
   return (
     <article className="lesson">
       <h1>Practicar</h1>
-      <p>Mezcla el cubo y prueba los algoritmos que has aprendido. Arrastra para girar la vista.</p>
+      <p>Mezcla el cubo y prueba los algoritmos que has aprendido. Desbloquea el cubo con el candado para girar la vista.</p>
       <Cube3D cubies={anim.cubies} turn={anim.turn} />
       {solved && <p className="ok big">¡Cubo resuelto! 🎉</p>}
       <div className="pad" role="group" aria-label="Giros">

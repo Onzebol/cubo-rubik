@@ -52,6 +52,7 @@ describe('Cube3D', () => {
   describe('botón para restablecer la vista', () => {
     const escena = (c: HTMLElement) => c.querySelector<HTMLElement>('.scene')!.style.transform
     const arrastrar = (c: HTMLElement) => {
+      fireEvent.click(screen.getByRole('button', { name: 'Desbloquear el giro del cubo' }))
       const el = c.querySelector('.cube3d')!
       fireEvent.pointerDown(el, { clientX: 100, clientY: 100, pointerId: 1 })
       fireEvent.pointerMove(el, { clientX: 160, clientY: 130, pointerId: 1 })
@@ -71,6 +72,34 @@ describe('Cube3D', () => {
       fireEvent.click(boton)
       expect(escena(container)).toBe(inicial)
       expect(boton).toBeDisabled()
+    })
+  })
+  describe('candado', () => {
+    const escena = (c: HTMLElement) => c.querySelector<HTMLElement>('.scene')!.style.transform
+    const arrastrar = (c: HTMLElement) => {
+      const el = c.querySelector('.cube3d')!
+      fireEvent.pointerDown(el, { clientX: 100, clientY: 100, pointerId: 1 })
+      fireEvent.pointerMove(el, { clientX: 160, clientY: 130, pointerId: 1 })
+      fireEvent.pointerUp(el, { pointerId: 1 })
+    }
+    it('empieza bloqueado: arrastrar no gira la vista y deja hacer scroll', () => {
+      const { container } = render(<Cube3D cubies={createCubies(false)} />)
+      const inicial = escena(container)
+      arrastrar(container)
+      expect(escena(container)).toBe(inicial)
+      expect(container.querySelector('.cube3d')).toHaveClass('locked')
+    })
+    it('al desbloquear gira, y al volver a bloquear deja de girar', () => {
+      const { container } = render(<Cube3D cubies={createCubies(false)} />)
+      const inicial = escena(container)
+      fireEvent.click(screen.getByRole('button', { name: 'Desbloquear el giro del cubo' }))
+      expect(container.querySelector('.cube3d')).not.toHaveClass('locked')
+      arrastrar(container)
+      const girada = escena(container)
+      expect(girada).not.toBe(inicial)
+      fireEvent.click(screen.getByRole('button', { name: 'Bloquear el giro del cubo' }))
+      arrastrar(container)
+      expect(escena(container)).toBe(girada)
     })
   })
   it('sin foco no hay gris', () => {
