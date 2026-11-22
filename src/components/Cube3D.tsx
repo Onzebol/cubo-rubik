@@ -105,7 +105,11 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
       aria-label={locked ? 'Desbloquear el giro del cubo' : 'Bloquear el giro del cubo'}
       title={locked ? 'Desbloquear para girar el cubo' : 'Bloquear el cubo'}
     >
-      {locked ? '🔒' : '🔓'}
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+        {locked
+          ? <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 0 1 6 0v3H9Z" />
+          : <path d="M12 2a5 5 0 0 0-5 5v1h2V7a3 3 0 0 1 6 0v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Z" />}
+      </svg>
     </button>
     <button
       type="button"
