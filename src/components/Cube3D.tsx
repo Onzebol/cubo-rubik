@@ -19,9 +19,25 @@ const FACE_TRANSFORM: Record<Face, string> = {
 }
 const ALL_FACES: Face[] = ['F', 'B', 'R', 'L', 'U', 'D']
 
-// Bloque negro dentro de cada pieza (4px más pequeño por lado): tapa lo que dejan ver las esquinas redondeadas
-const INSET = 4
-const solidTransform = (f: Face) => FACE_TRANSFORM[f].replace(`${HALF}px`, `${HALF - INSET}px`)
+// Cada pieza es un sólido negro de verdad: tres bloques cruzados, cada uno 2·R más corto en dos ejes.
+// Su unión es un cubo con las aristas rebajadas R px; así no hay huecos ni canales por los que ver
+// a través, y las caras exteriores redondeadas (.base) tapan los escalones.
+const R = 3
+const SOLID_FACES: CSSProperties[] = (() => {
+  const out: CSSProperties[] = []
+  const lado = CUBIE_SIZE - 2 * R
+  for (const [sx, sy, sz] of [[CUBIE_SIZE, lado, lado], [lado, CUBIE_SIZE, lado], [lado, lado, CUBIE_SIZE]]) {
+    const cara = (w: number, h: number, transform: string) =>
+      out.push({ width: w, height: h, left: (CUBIE_SIZE - w) / 2, top: (CUBIE_SIZE - h) / 2, transform })
+    cara(sx, sy, `translateZ(${sz / 2}px)`)
+    cara(sx, sy, `rotateY(180deg) translateZ(${sz / 2}px)`)
+    cara(sz, sy, `rotateY(90deg) translateZ(${sx / 2}px)`)
+    cara(sz, sy, `rotateY(-90deg) translateZ(${sx / 2}px)`)
+    cara(sx, sz, `rotateX(90deg) translateZ(${sy / 2}px)`)
+    cara(sx, sz, `rotateX(-90deg) translateZ(${sy / 2}px)`)
+  }
+  return out
+})()
 
 interface Props {
   cubies: Cubie[]
@@ -76,8 +92,8 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
             className="cubie"
             style={{ transform: cssMatrix(animatedMatrix(c, CUBIE_SIZE, turn ?? undefined)) }}
           >
-            {ALL_FACES.map((f) => (
-              <div key={`solid-${f}`} className="solid" style={{ transform: solidTransform(f) } as CSSProperties} />
+            {SOLID_FACES.map((style, i) => (
+              <div key={`solid-${i}`} className="solid" style={style} />
             ))}
             {ALL_FACES.map((f) => (
               <div key={f} className="base" style={{ transform: FACE_TRANSFORM[f] } as CSSProperties} />
