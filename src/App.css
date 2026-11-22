@@ -39,8 +39,8 @@ code { background: var(--card); padding: 1px 6px; border-radius: 4px; }
 .tip { background: var(--tip-bg); border: 1px solid var(--tip-line); padding: 10px 14px; border-radius: 10px; }
 .hint { color: var(--muted); font-size: .9rem; margin-top: 0; }
 /* barra fija abajo con paso anterior y siguiente */
-.pager { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); }
-.pager > * { flex: 1 1 0; min-width: 0; max-width: 354px; }
+.pager { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; gap: 8px; padding: 24px 12px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(to bottom, transparent, var(--bg) 30%); pointer-events: none; }
+.pager > * { pointer-events: auto; flex: 1 1 0; min-width: 0; max-width: 354px; }
 .step { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; min-height: 56px; padding: 8px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; color: var(--text); text-decoration: none; font-size: 1.1rem; font-weight: 600; }
 .step.next { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .step small { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .75rem; font-weight: 400; opacity: .85; }
