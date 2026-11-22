@@ -19,6 +19,10 @@ const FACE_TRANSFORM: Record<Face, string> = {
 }
 const ALL_FACES: Face[] = ['F', 'B', 'R', 'L', 'U', 'D']
 
+// Núcleo: cubo negro un poco más pequeño que el cubo entero (queda oculto tras las piezas)
+const CORE_SIZE = CUBIE_SIZE * 3 - 10
+const coreTransform = (f: Face) => FACE_TRANSFORM[f].replace(`${HALF}px`, `${CORE_SIZE / 2}px`)
+
 interface Props {
   cubies: Cubie[]
   turn?: { face: Face; turns: number } | null
@@ -64,6 +68,14 @@ export function Cube3D({ cubies, turn, className, focus = 'all', highlight = [],
       aria-label="Cubo de Rubik en 3D. Arrastra para girar la vista."
     >
       <div className="scene" style={{ transform: `rotateX(${view.rx}deg) rotateY(${view.ry}deg)` }}>
+        {/* núcleo negro: tapa el interior para que no se vea a través de los huecos redondeados */}
+        {ALL_FACES.map((f) => (
+          <div
+            key={`core-${f}`}
+            className="core"
+            style={{ transform: coreTransform(f) } as CSSProperties}
+          />
+        ))}
         {cubies.map((c) => {
           const resaltada = c.faces.length > 1 && highlight.includes(pieceKey(c))
           return (
