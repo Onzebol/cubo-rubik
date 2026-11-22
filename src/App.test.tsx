@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { ALGORITHMS, ALGORITHM_GROUPS } from './algorithms'
@@ -27,11 +27,9 @@ describe('App', () => {
     const l = LESSONS.find((x) => x.id === 'cruz-amarilla')!
     for (const d of l.demos) expect(await screen.findByText(d.instructions)).toBeInTheDocument()
   })
-  it('la variante Kubekings sale aparte y no cuenta para el progreso', () => {
-    localStorage.setItem('cubo-progreso', JSON.stringify(['kk-aristas']))
+  it('la variante Kubekings sale aparte', () => {
     render(<App instant />)
     expect(screen.getByRole('heading', { level: 2, name: /variante Kubekings/i })).toBeInTheDocument()
-    expect(screen.getByText(/0 de \d+ lecciones/)).toBeInTheDocument()
   })
   it('la cruz amarilla enlaza con la variante y esta, con la guía oficial', async () => {
     window.location.hash = '#/leccion/cruz-amarilla'
@@ -49,12 +47,23 @@ describe('App', () => {
     expect(pager).toHaveTextContent(/la cruz amarilla/)
     expect(pager).toHaveTextContent(/Kubekings 3/)
   })
-  it('marca una lección como hecha y guarda el progreso', async () => {
-    const u = userEvent.setup()
+  it('la lección lleva una barra fija con paso anterior y siguiente: título y descripción', async () => {
+    window.location.hash = '#/leccion/cruz-blanca'
     render(<App instant />)
-    await u.click(screen.getByRole('link', { name: /la margarita/i }))
-    await u.click(await screen.findByRole('checkbox', { name: /hecha/i }))
-    expect(JSON.parse(localStorage.getItem('cubo-progreso') ?? '[]')).toContain('margarita')
+    const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
+    const prev = LESSONS.find((l) => l.id === 'margarita')!
+    const next = LESSONS.find((l) => l.id === 'esquinas-blancas')!
+    expect(within(pager).getByRole('link', { name: new RegExp(prev.title) })).toHaveAttribute('href', '#/leccion/margarita')
+    expect(within(pager).getByText(prev.summary)).toBeInTheDocument()
+    expect(within(pager).getByRole('link', { name: new RegExp(next.title) })).toHaveAttribute('href', '#/leccion/esquinas-blancas')
+    expect(within(pager).getByText(next.summary)).toBeInTheDocument()
+  })
+  it('la última lección lleva a practicar y ya no hay «Marcar como hecha»', async () => {
+    window.location.hash = '#/leccion/posicionar-aristas'
+    render(<App instant />)
+    const pager = await screen.findByRole('navigation', { name: 'Lecciones' })
+    expect(within(pager).getByRole('link', { name: /Practicar/ })).toHaveAttribute('href', '#/practica')
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
   })
   it('la sección de algoritmos tiene su pestaña y muestra todos con su reproductor', async () => {
     const u = userEvent.setup()

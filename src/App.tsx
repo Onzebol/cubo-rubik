@@ -10,8 +10,6 @@ import { UpdateBanner } from './pwa/UpdateBanner'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useAnimator } from './useAnimator'
 
-const PROGRESS_KEY = 'cubo-progreso'
-
 function useHash(): string {
   const [hash, setHash] = useState(window.location.hash)
   useEffect(() => {
@@ -22,52 +20,29 @@ function useHash(): string {
   return hash
 }
 
-function useProgress() {
-  const [done, setDone] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? '[]') } catch { return [] }
-  })
-  const toggle = (id: string) => setDone((d) => {
-    const next = d.includes(id) ? d.filter((x) => x !== id) : [...d, id]
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(next))
-    return next
-  })
-  return { done, toggle }
-}
-
 /** Texto con **negritas** */
 function Rich({ text }: { text: string }) {
   return <>{text.split(/\*\*(.+?)\*\*/g).map((p, i) => (i % 2 ? <strong key={i}>{p}</strong> : p))}</>
 }
 
-function Home({ done }: { done: string[] }) {
+function Home() {
   const stages = [...new Set(LESSONS.map((l) => l.stage))]
-  // el progreso cuenta solo el camino de la guía oficial; la variante es una alternativa para comparar
-  const official = LESSONS.filter((l) => !l.variant)
-  const hechas = official.filter((l) => done.includes(l.id)).length
-  const pct = Math.round((hechas / official.length) * 100)
   return (
     <>
       <section className="hero">
         <h1>Aprende a resolver el cubo de Rubik</h1>
         <p>Método por capas de la guía oficial de Rubik&apos;s: lo ves en 3D, animado y paso a paso.</p>
-        <div className="bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso">
-          <span style={{ width: `${pct}%` }} />
-        </div>
-        <small>{hechas} de {official.length} lecciones</small>
       </section>
       {stages.map((s) => (
         <section key={s}>
           <h2>{s}</h2>
           {LESSONS.find((l) => l.stage === s)?.variant && (
-            <p className="hint">Alternativa para comparar: comparte la cruz amarilla con la guía oficial, pero ordena la última capa en otro orden y con otros algoritmos. No cuenta para el progreso.</p>
+            <p className="hint">Alternativa para comparar: comparte la cruz amarilla con la guía oficial, pero ordena la última capa en otro orden y con otros algoritmos.</p>
           )}
           <ul className="lessons">
             {LESSONS.filter((l) => l.stage === s).map((l) => (
               <li key={l.id}>
-                <a href={`#/leccion/${l.id}`} className={done.includes(l.id) ? 'done' : ''}>
-                  <span className="tick" aria-hidden="true">{done.includes(l.id) ? '✓' : '○'}</span>
-                  <span>{l.title}</span>
-                </a>
+                <a href={`#/leccion/${l.id}`}>{l.title}</a>
               </li>
             ))}
           </ul>
@@ -77,7 +52,18 @@ function Home({ done }: { done: string[] }) {
   )
 }
 
-function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: boolean; toggle: () => void; instant: boolean }) {
+/** Botón de la barra fija de abajo: título grande y, debajo, una descripción corta */
+function StepLink({ href, dir, title, summary }: { href: string; dir: 'prev' | 'next'; title: string; summary: string }) {
+  return (
+    <a href={href} className={`step ${dir}`}>
+      <span className="dir" aria-hidden="true">{dir === 'prev' ? '← Anterior' : 'Siguiente →'}</span>
+      <span className="step-title">{title}</span>
+      <span className="step-desc">{summary}</span>
+    </a>
+  )
+}
+
+function LessonView({ lesson, instant }: { lesson: Lesson; instant: boolean }) {
   const path = pathOf(lesson)
   const i = path.indexOf(lesson)
   const prev = path[i - 1]
@@ -100,12 +86,11 @@ function LessonView({ lesson, done, toggle, instant }: { lesson: Lesson; done: b
       {lesson.demos.map((d) => (
         <AlgoPlayer key={`${lesson.id}-${d.id ?? d.title}`} alg={d.alg} setup={d.setup} instructions={d.instructions} yellowUp={lesson.yellowUp} title={d.title} focus={d.focus ?? lesson.focus} highlight={d.highlight} instant={instant} />
       ))}
-      <label className="check">
-        <input type="checkbox" checked={done} onChange={toggle} /> Marcar como hecha
-      </label>
       <nav className="pager" aria-label="Lecciones">
-        {prev ? <a href={`#/leccion/${prev.id}`}>← {prev.title}</a> : <span />}
-        {next ? <a href={`#/leccion/${next.id}`}>{next.title} →</a> : <a href="#/practica">Practicar →</a>}
+        {prev ? <StepLink href={`#/leccion/${prev.id}`} dir="prev" title={prev.title} summary={prev.summary} /> : <span />}
+        {next
+          ? <StepLink href={`#/leccion/${next.id}`} dir="next" title={next.title} summary={next.summary} />
+          : <StepLink href="#/practica" dir="next" title="Practicar" summary="Mezcla el cubo y prueba lo que has aprendido." />}
       </nav>
     </article>
   )
@@ -177,17 +162,16 @@ const reducedMotion = () =>
 
 export default function App({ instant = reducedMotion() }: { instant?: boolean }) {
   const hash = useHash()
-  const { done, toggle } = useProgress()
   useEffect(() => { window.scrollTo?.(0, 0) }, [hash])
 
   let page: ReactNode
   const m = hash.match(/^#\/leccion\/(.+)$/)
   const lesson = m ? LESSONS.find((l) => l.id === m[1]) : undefined
-  if (lesson) page = <LessonView key={lesson.id} lesson={lesson} done={done.includes(lesson.id)} toggle={() => toggle(lesson.id)} instant={instant} />
+  if (lesson) page = <LessonView key={lesson.id} lesson={lesson} instant={instant} />
   else if (hash === '#/practica') page = <Practice instant={instant} />
   else if (hash === '#/algoritmos') page = <AlgorithmsPage instant={instant} />
   else if (hash === '#/fuentes') page = <Sources />
-  else page = <Home done={done} />
+  else page = <Home />
 
   const cur = (ok: boolean) => (ok ? 'page' : undefined)
 
