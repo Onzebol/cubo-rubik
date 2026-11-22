@@ -9,6 +9,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CuboFácil" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // aplica el tema guardado antes de pintar, para que no haya parpadeo (misma clave que src/theme.ts)
+      try { var t = localStorage.getItem('cubo-tema'); if (t === 'claro' || t === 'oscuro') document.documentElement.setAttribute('data-tema', t) } catch (e) {}
+    </script>
     <title>CuboFácil: aprende a resolver el cubo de Rubik</title>
     <meta name="theme-color" content="#14161c" />
   </head>
